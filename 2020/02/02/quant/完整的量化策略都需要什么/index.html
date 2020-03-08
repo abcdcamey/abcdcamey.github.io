@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="一个完整的量化策略交易是有由许多不同的模块构成，每个模块在整个交易过程中都扮演着重要的角色，其大致可分为：1、市场：买什么2、逻辑：买卖思路3、入市时机：何时买卖4、头寸：买卖多少5、止盈止损：何时止损何时离场6、其他：人工干预、行情判断等等">
+<meta property="og:type" content="article">
+<meta property="og:title" content="完整的量化策略交易都需要些什么？">
+<meta property="og:url" content="http://yoursite.com/2020/02/02/quant/完整的量化策略都需要什么/index.html">
+<meta property="og:site_name" content="Ecosphere">
+<meta property="og:description" content="一个完整的量化策略交易是有由许多不同的模块构成，每个模块在整个交易过程中都扮演着重要的角色，其大致可分为：1、市场：买什么2、逻辑：买卖思路3、入市时机：何时买卖4、头寸：买卖多少5、止盈止损：何时止损何时离场6、其他：人工干预、行情判断等等">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://yoursite.com/pic/量化交易策略.png">
+<meta property="og:updated_time" content="2020-02-03T14:42:30.186Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="完整的量化策略交易都需要些什么？">
+<meta name="twitter:description" content="一个完整的量化策略交易是有由许多不同的模块构成，每个模块在整个交易过程中都扮演着重要的角色，其大致可分为：1、市场：买什么2、逻辑：买卖思路3、入市时机：何时买卖4、头寸：买卖多少5、止盈止损：何时止损何时离场6、其他：人工干预、行情判断等等">
+<meta name="twitter:image" content="http://yoursite.com/pic/量化交易策略.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/02/02/quant/完整的量化策略都需要什么/"/>
+
+
+
+
+
+  <title>完整的量化策略交易都需要些什么？ | Ecosphere</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ecosphere</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">一叶知秋</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/02/quant/完整的量化策略都需要什么/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="camey">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ecosphere">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">完整的量化策略交易都需要些什么？</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-02-02T17:09:48+08:00">
+                2020-02-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/量化交易/" itemprop="url" rel="index">
+                    <span itemprop="name">量化交易</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>一个完整的量化策略交易是有由许多不同的模块构成，每个模块在整个交易过程中都扮演着重要的角色，其大致可分为：<br>1、市场：买什么<br>2、逻辑：买卖思路<br>3、入市时机：何时买卖<br>4、头寸：买卖多少<br>5、止盈止损：何时止损何时离场<br>6、其他：人工干预、行情判断等等</p>
+<a id="more"></a>
+<p><img src="/pic/量化交易策略.png" alt="logo" title="量化交易策略"></p>
+<h2 id="1-市场"><a href="#1-市场" class="headerlink" title="1 市场"></a>1 市场</h2><p>市场，即策略可以买什么标的，大致可以分为以下几类：1、股票 2、ETF 3、期货 4、债券 5、期权<br>我们目前主要的研究标的以A股股票为主，A股分版块来看可以分为主板、中小板、创业板、科创板等等。<br>一个量化策略的开始一般会构建一个初始的股票池，后续的一系列操作都会在这个股票池里进行操作。当然，股票池会随着时间动态的增减股票。</p>
+<h2 id="2-逻辑"><a href="#2-逻辑" class="headerlink" title="2 逻辑"></a>2 逻辑</h2><p>万事皆有因果，选股也不例外，我们选择投资标的的内在逻辑是什么很重要。</p>
+<h3 id="2-1-从投资的流派来分："><a href="#2-1-从投资的流派来分：" class="headerlink" title="2.1 从投资的流派来分："></a>2.1 从投资的流派来分：</h3><p>价值型、成长型、技术型、指数型、组合型<br>1、价值型：关注于价值，投资时间以月甚至年为单位，寻找那些定价低于内在价值的投资对象，更多从基本面分析的角度，考察一个公司的商业逻辑所对应的数据指标，并建立相应的财务分析、行业分析量化模型<br>2、成长型：关注于增长，投资时间以月甚至年为单位，寻找价值增长速度快于价格增长速度的投资对象，与价值投资类似，只不过量化模型偏重于价值的增长速度而不仅仅是价值本身。<br>3、指数投资：忽略价格-价值关系，而购买整个市场的一部分，即试图尽量准确地跟踪基准指数的变化，投资时间以月甚至年为单位，一些指数型投资策略，还侧重于指数增强，即通过对基准进行择时或者对成分股进行筛选来实现相对于指数的超额回报<br>4、技术投资：关注与价格趋势，投资时间一般较短，从秒、分钟、到数日、数周不等，关注与量、价、时、空的各种统计规律的分析和建模，也通过很多技术指标来对价格趋势进行预测，随着大数据和人工智能的发展，也有通过市场情绪的监测、对市场外部数据的分析来寻找价格趋势与各种数据的相关性，采用数据驱动模型作为量化交易系统的判断依据。<br>5、组合投资：将风险偏好与价格-价值风险水平相匹配，关注于对投资组合风险水平的估算以及获得最佳的风险-收益机会集。</p>
+<h3 id="2-2-从投资决策依据（因子）来分："><a href="#2-2-从投资决策依据（因子）来分：" class="headerlink" title="2.2 从投资决策依据（因子）来分："></a>2.2 从投资决策依据（因子）来分：</h3><p>基本面、技术面、资金面、其他<br>1、基本面：业绩表现，企业潜力大小。<br>2、技术面：趋势方向、涨跌空间大小、有无买卖信号<br>3、资金面：大盘版块资金流向、个股资金的流向、主力大单的表现等等<br>4、其他：市场情绪、利多利空的消息和新闻等事件。<br>公司公告：定期报告、业绩预告、重大资产重组、高送转、停复牌、定增、重大合同<br>研报：行业研报、公司研报、机构调研<br>社交媒体：股吧、论坛、公众号</p>
+<h3 id="2-3-盈利要素有以下几个方面："><a href="#2-3-盈利要素有以下几个方面：" class="headerlink" title="2.3 盈利要素有以下几个方面："></a>2.3 盈利要素有以下几个方面：</h3><p>1、策略的胜率<br>2、每次交易的盈亏比<br>1和2决定期望收益<br>3、头寸规模的确定<br>4、资金量的大小<br>5、交易机会的多少<br>6、交易成本</p>
+<h2 id="3-入市时机"><a href="#3-入市时机" class="headerlink" title="3 入市时机"></a>3 入市时机</h2><p>市场是有其自身周期的，正常情况下，牛熊持续的时间大概占整体的1/3，其余2/3的时间应该都处于震旦阶段，牛市和震旦市的买卖逻辑区别很大，前者适合用趋势跟随策略，后者适合用均值回复策略。<br>趋势跟随策略认为前期涨得多的股票，在牛市中还会继续涨，因此需跟随趋势买入，其特点是胜率不一定高，但是盈亏比高。<br>均值回复策略认为市场处于震旦周期中，任何投资标的的价格都是围绕其均值上下波动，在前期涨得多的，后期可能会回调，而前期涨得少的，后期会补涨回来。可建立多空组合，做多前期表现最差的组合，做空表现最好的组合。也可设计套利模式：两只股票之间、两组股票之间、两种ETF之间的相关性和替代性。</p>
+<p>细到个股而言，也有许多的方法来判断买卖时机，典型的有：<br>1、均线系统<br>2、突破/回踩<br>3、市场情绪<br>4、事件驱动</p>
+<h2 id="4-头寸"><a href="#4-头寸" class="headerlink" title="4 头寸"></a>4 头寸</h2><p>头寸表示每次买卖的量，对于头寸管理，有一下几种常见方式：<br>1、等价值交易单位：把资金等分为相同金额的若干份，按每份金额计算出允许交易的投资标的单位个数，优点是对每一个标的赋予相等的权重<br>缺点是每个单位的不同标的风险差异可能较大，通常不能分成相同的单位。</p>
+<p>2、百分比风险模型：<br>平均分配每个标的允许承担的最大风险金额，以及每个投资标的可接受最大损失，则头寸规模=标的总风险/每股风险<br>优点是可通过实际的风险承担将资产组合中各组成要素的业绩拉平；缺点是有些交易因为风险太大而拒绝。</p>
+<p>3、百分比波动幅度模型：<br>和百分比风险模型类似，只是每股风险的计算是根据投资标的在一段时间内的价格波动幅度计算的。</p>
+<h2 id="5-止盈止损"><a href="#5-止盈止损" class="headerlink" title="5 止盈止损"></a>5 止盈止损</h2><p>在止盈止损中，一般需要计算一个重要的指标：平均波动率，即一段时间窗口内的波动率平均值，波动取当日最高价、当日最低价、昨日收盘价的最大差值。</p>
+<h3 id="5-1-止盈的几类方法："><a href="#5-1-止盈的几类方法：" class="headerlink" title="5.1 止盈的几类方法："></a>5.1 止盈的几类方法：</h3><p>1、最大盈利：一笔交易期望获得的最大利润，例如设置为平均波动率的倍数<br>2、回撤止盈：最新高点的固定回撤百分比<br>3、大幅波动：当市场出现不利的大幅波动时止盈<br>4、技术信号止盈：例如均线交叉，停止信号等等</p>
+<h3 id="5-2-止损的几类方法："><a href="#5-2-止损的几类方法：" class="headerlink" title="5.2  止损的几类方法："></a>5.2  止损的几类方法：</h3><p>1、最大亏损：设置一笔交易愿意承担的最大损失<br>2、波动率倍数：止损价设定为平均波动率的倍数<br>3、波动率标准差：设定止损价位波动率的标准差<br>4、技术信号：支撑线、死叉等技术信号作为止损条件</p>
+<h2 id="6-其他：人工干预、行情判断等等"><a href="#6-其他：人工干预、行情判断等等" class="headerlink" title="6 其他：人工干预、行情判断等等"></a>6 其他：人工干预、行情判断等等</h2><p>一个完整的交易系统是应该是需要能够进行人工干预的，因为市场风云变幻，任何极端的情况都有可能遇见，假设有的情况在我们预先建立的策略里面没有考虑到，则必须进行人工干预。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>上文总结了一个完整的量化交易策略都需要些什么，其中每个部分都只是简要的介绍一些概念或者常见的方法，具体的实操过程中一定会需要更加深入的理解每一个部分、每一种方法的具体意义和应用场景。当然，还有许多更加高深的方法需要去慢慢的探索和尝试，例如如何把近年来发展迅速的机器学习、人工智能等技术应用到量化交易策略中去，这也是我本人一直希望去尝试的方向，共勉！</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/12/29/quant/因子分析-外资/" rel="next" title="因子分析-外资">
+                <i class="fa fa-chevron-left"></i> 因子分析-外资
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <p class="site-author-name" itemprop="name">camey</p>
+            <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives/">
+            
+                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-市场"><span class="nav-number">1.</span> <span class="nav-text">1 市场</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-逻辑"><span class="nav-number">2.</span> <span class="nav-text">2 逻辑</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-从投资的流派来分："><span class="nav-number">2.1.</span> <span class="nav-text">2.1 从投资的流派来分：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-从投资决策依据（因子）来分："><span class="nav-number">2.2.</span> <span class="nav-text">2.2 从投资决策依据（因子）来分：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-盈利要素有以下几个方面："><span class="nav-number">2.3.</span> <span class="nav-text">2.3 盈利要素有以下几个方面：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-入市时机"><span class="nav-number">3.</span> <span class="nav-text">3 入市时机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-头寸"><span class="nav-number">4.</span> <span class="nav-text">4 头寸</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-止盈止损"><span class="nav-number">5.</span> <span class="nav-text">5 止盈止损</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-止盈的几类方法："><span class="nav-number">5.1.</span> <span class="nav-text">5.1 止盈的几类方法：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-止损的几类方法："><span class="nav-number">5.2.</span> <span class="nav-text">5.2  止损的几类方法：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-其他：人工干预、行情判断等等"><span class="nav-number">6.</span> <span class="nav-text">6 其他：人工干预、行情判断等等</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number"></span> <span class="nav-text">总结</span></a></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">camey</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" href="https://hexo.io">Hexo</a></div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

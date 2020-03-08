@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="最近看到一个跟踪外资资金操作的策略，17年-19年3年收益大概在220%，因为年化收益高且策略简单，故想对外资动作这个因子做一些简单的数据探索，这个因子也是我探索的第一个因子，在此做一个记录。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="因子分析-外资">
+<meta property="og:url" content="http://yoursite.com/2019/12/29/quant/因子分析-外资/index.html">
+<meta property="og:site_name" content="Ecosphere">
+<meta property="og:description" content="最近看到一个跟踪外资资金操作的策略，17年-19年3年收益大概在220%，因为年化收益高且策略简单，故想对外资动作这个因子做一些简单的数据探索，这个因子也是我探索的第一个因子，在此做一个记录。">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://yoursite.com/pic/lugutong_rate.jpg">
+<meta property="og:image" content="http://yoursite.com/pic/foreigner_buy.jpg">
+<meta property="og:image" content="http://yoursite.com/pic/buy_future_change.jpg">
+<meta property="og:image" content="http://yoursite.com/pic/foreigner_top_stock.png">
+<meta property="og:image" content="http://yoursite.com/pic/top_stock.jpg">
+<meta property="og:image" content="http://yoursite.com/pic/every_year_mean_sta.jpg">
+<meta property="og:image" content="http://yoursite.com/pic/外资跟踪策略2017.png">
+<meta property="og:image" content="http://yoursite.com/pic/外资跟踪策略2018.png">
+<meta property="og:image" content="http://yoursite.com/pic/外资跟踪策略2019.png">
+<meta property="og:updated_time" content="2019-12-30T01:31:02.700Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="因子分析-外资">
+<meta name="twitter:description" content="最近看到一个跟踪外资资金操作的策略，17年-19年3年收益大概在220%，因为年化收益高且策略简单，故想对外资动作这个因子做一些简单的数据探索，这个因子也是我探索的第一个因子，在此做一个记录。">
+<meta name="twitter:image" content="http://yoursite.com/pic/lugutong_rate.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/12/29/quant/因子分析-外资/"/>
+
+
+
+
+
+  <title>因子分析-外资 | Ecosphere</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ecosphere</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">一叶知秋</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/29/quant/因子分析-外资/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="camey">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ecosphere">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">因子分析-外资</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-12-29T21:00:30+08:00">
+                2019-12-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/量化交易/" itemprop="url" rel="index">
+                    <span itemprop="name">量化交易</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近看到一个跟踪外资资金操作的策略，17年-19年3年收益大概在220%，因为年化收益高且策略简单，故想对外资动作这个因子做一些简单的数据探索，这个因子也是我探索的第一个因子，在此做一个记录。</p>
+<a id="more"></a>
+<h1 id="外资交易规模在A股市场比重越来越大"><a href="#外资交易规模在A股市场比重越来越大" class="headerlink" title="外资交易规模在A股市场比重越来越大"></a>外资交易规模在A股市场比重越来越大</h1><p>A股市场目前应该处于历史上的低估值区间，并且随着沪股通、深股通的开通及相应额度的放开，外资对A股的影响预计将越来越大，下图蓝色曲线表示是2015年以来A股市场的交易规模曲线，红色为陆股通的交易规模占A股市场交易规模的比例曲线，从图中也可以很清楚的看到，借道陆股通的外资规模占A股市场整体规模的比重越来越大。<br><img src="/pic/lugutong_rate.jpg" alt="logo" title="外资占比"></p>
+<h1 id="外资净买入与上证指数的关系"><a href="#外资净买入与上证指数的关系" class="headerlink" title="外资净买入与上证指数的关系"></a>外资净买入与上证指数的关系</h1><p>关于资金净流入，一个直观的想法是净买入是否能够成为指数涨跌的指标，下图表示外资净买入金额与上证指数的走势图，从图中并不能观察出两者之间有什么关系，或许因为外资目前占A股市场的比例还不够大？<br><img src="/pic/foreigner_buy.jpg" alt="logo" title="外资净买入与上证指数"><br>为了进一步验证两者之间的关系，我们选取了皮尔逊相关系数指标来衡量两者的相关性，数据选取3年以来每天的外资净买入，使用权重为0.2的指数加权平均做了平滑处理，同时选择了未来10天的上证指数变化率作为目标对照，下图刻画出了两者之间的关系，最终计算出的皮尔逊相关系数为-0.12，并没有明显的相关性。<br><img src="/pic/buy_future_change.jpg" alt="logo" title="外资净买入与上证指数的涨跌幅相关性"></p>
+<h1 id="外资与个股的关系"><a href="#外资与个股的关系" class="headerlink" title="外资与个股的关系"></a>外资与个股的关系</h1><p>上述的探索主要是从宏观大盘上来做分析，但是具体到个股，外资的操作是否能够可以作为我们选股的指标呢？接下来做一下验证<br>我们的数据选取了每天公布的陆股通top10交易金额榜单，下图为16年-19年各股上榜的次数，其中贵州茅台以916次荣登榜首。<br><img src="/pic/foreigner_top_stock.png" alt="logo" title="近4年陆股通交易金额top10上榜次数及涨幅"><br>按照这个榜单，我们看到这些外资青睐的股票4年以来收益率惊人，为了进一步验证，那么我们把观测的数据范围再扩大一些，把4年来上过榜单的股票按照上榜次数排序，然后划分为10等份，每一等份的股票求其4年以来的平均收益率，结果如下图：<br><img src="/pic/top_stock.jpg" alt="logo" title="上榜次数排名与平均收益率"><br>根据上图我们可以得出结论，外资交易越活跃的股票，收益率越大吗？似乎并不一定，因为这个数据是统计了4年的结果，似乎有未来函数的风险，因此我们再进一步的验证，把时间还原到每一时刻，并统计在此之前的top 20%榜单股票池及其未来30天时间的平均收益率(相对上证指数的收益率)，得到如下图结果：<br><img src="/pic/every_year_mean_sta.jpg" alt="logo" title="近4年top 20%的股票池及其30天后的平均收益率"></p>
+<p>从以上结果我们看出，虽然进一步验证后的收益率并没有前述的那么高，但每次选股的平均收益率都是正的且在某些年份还是很不错的，这一结论也进一步的验证了跟踪外资是一个相对比较有效的因子， 至少过去4年是这样的。<br>以下是在聚宽上做了外资跟踪策略的3年回测结果：<br><img src="/pic/外资跟踪策略2017.png" alt="logo"><br><img src="/pic/外资跟踪策略2018.png" alt="logo"><br><img src="/pic/外资跟踪策略2019.png" alt="logo"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/24/algorithm/PCA/" rel="next" title="机器学习算法-PCA">
+                <i class="fa fa-chevron-left"></i> 机器学习算法-PCA
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/02/02/quant/完整的量化策略都需要什么/" rel="prev" title="完整的量化策略交易都需要些什么？">
+                完整的量化策略交易都需要些什么？ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <p class="site-author-name" itemprop="name">camey</p>
+            <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives/">
+            
+                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#外资交易规模在A股市场比重越来越大"><span class="nav-number">1.</span> <span class="nav-text">外资交易规模在A股市场比重越来越大</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#外资净买入与上证指数的关系"><span class="nav-number">2.</span> <span class="nav-text">外资净买入与上证指数的关系</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#外资与个股的关系"><span class="nav-number">3.</span> <span class="nav-text">外资与个股的关系</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">camey</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" href="https://hexo.io">Hexo</a></div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

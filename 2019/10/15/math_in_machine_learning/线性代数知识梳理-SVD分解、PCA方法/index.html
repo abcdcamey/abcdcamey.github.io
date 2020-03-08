@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="本章复习梳理了机器学习中常用的线性代数知识，并且推导了SVD分解和PCA算法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【线性代数知识梳理】-SVD分解、PCA方法">
+<meta property="og:url" content="http://yoursite.com/2019/10/15/math_in_machine_learning/线性代数知识梳理-SVD分解、PCA方法/index.html">
+<meta property="og:site_name" content="Ecosphere">
+<meta property="og:description" content="本章复习梳理了机器学习中常用的线性代数知识，并且推导了SVD分解和PCA算法。">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-10-15T13:01:19.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【线性代数知识梳理】-SVD分解、PCA方法">
+<meta name="twitter:description" content="本章复习梳理了机器学习中常用的线性代数知识，并且推导了SVD分解和PCA算法。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/10/15/math_in_machine_learning/线性代数知识梳理-SVD分解、PCA方法/"/>
+
+
+
+
+
+  <title>【线性代数知识梳理】-SVD分解、PCA方法 | Ecosphere</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ecosphere</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">一叶知秋</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/15/math_in_machine_learning/线性代数知识梳理-SVD分解、PCA方法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="camey">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ecosphere">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">【线性代数知识梳理】-SVD分解、PCA方法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-15T21:01:19+08:00">
+                2019-10-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习中的数学/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习中的数学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本章复习梳理了机器学习中常用的线性代数知识，并且推导了SVD分解和PCA算法。</p>
+<a id="more"></a>
+<h2 id="标量、向量、矩阵的性质"><a href="#标量、向量、矩阵的性质" class="headerlink" title="标量、向量、矩阵的性质"></a>标量、向量、矩阵的性质</h2><p>标量，是一个独立的数。<br>向量，是一列数，如果每个元素都属于实数集$R$且该向量一共有n个元素，则该向量属于实数集$R$的n次笛卡尔集即$R^n$<br>矩阵，n个m维的列向量记做$A_{m<em>n}$，方阵：n=m，单位矩阵：主对角线上的元素都为1，其他位置都为0的矩阵<br><strong>矩阵的逆</strong>，满足$A^{-1}A=I_n$的矩阵$A^{-1}$称为矩阵$A$的逆矩阵，逆矩阵不一定存在，<strong>可逆矩阵一定是方阵</strong><br><strong>矩阵转置</strong>，把矩阵沿着主对角线做镜像翻转称为矩阵的转置操作，记为$A^{T}$，非方阵也可以做转置操作<br><strong>对称矩阵</strong>，转置等于自身的矩阵叫做对称矩阵，即$A=A^T$<br><em>*对角矩阵</em></em>，只在主对角线上含有非零元素，其他位置上都是0的矩阵称为对角矩阵,注意：对角矩阵不一定是方阵。非方阵的对角矩阵没有逆矩阵。<br>正交，如果$x^ty=0$,那么向量$x$和$y$相互正交，如果两个向量的范数都为1，即$||x||$=1，则称为标准正交<br>正交矩阵，行向量和列向量分别是标准正交的方阵称为正交矩阵，即$A^TA=AA^T =I$，注意：向量分别是标注正交</p>
+<h2 id="SVD分解"><a href="#SVD分解" class="headerlink" title="SVD分解"></a>SVD分解</h2><h3 id="先介绍特征分解："><a href="#先介绍特征分解：" class="headerlink" title="先介绍特征分解："></a>先介绍特征分解：</h3><p>方阵$A$的特征向量是指与$A$相乘之后相当于对此特征向量进行缩放的非零向量。<br>$Av = \lambda v$<br>$\lambda $称作特征值，$v$称作特征向量<br>假设矩阵$A$有n个线性无关的特征向量{$v^{(1)}，…v^{(ns)}$}，把这些特征向量连接成一个矩阵$V$，那么：$AV=Vdiag(\lambda)$<br>我们把这个式子称为$A$的特征分解<br>因为缩放之后的$sv$还是$A$的特征向量，因此我们把特征向量单位化之后，$V$就为<strong>正交矩阵</strong>(相互正交且单数为1的标准正交)<br>因此特征分解也可以表示为$A=Vdiag(\lambda)V^{-1} = Q \Lambda Q^T$<br>其中$Q$是$A$的特征向量组成的正交矩阵<br>每个实对称矩阵都可以分解成实特征向量和实特征值，但分解可能并不唯一，我们通常按照降序排列$Lambda$的元素，特征分解是唯一当且仅当特征值都是唯一的。<br>特征分解后所有特征值都是正数的矩阵称为<strong>正定矩阵</strong>，特征值非负数称为半正定矩阵<br>要证明正定矩阵，等价于$任意x,x^TAx&gt;0$</p>
+<h3 id="SVD分解-1"><a href="#SVD分解-1" class="headerlink" title="SVD分解"></a>SVD分解</h3><p>如果矩阵$A$不是方阵，不能做特征分解，那么只能使用奇异值分解，与特征分解也是类似的：<br>$A= U D V^T$，假设$A$是一个mxn的矩阵，那么$U$是一个mxm的矩阵，$D$是一个mxn的矩阵，$V$是一个nxn的矩阵<br><strong>有以下结论</strong>：$A$的左奇异向量$U$是$AA^T$的特征向量，$A$的右奇异向量$V$是$A^TA$的特征向量，$A$的非零奇异值是$A^TA$和$AA^T$特征值的平方根，注：$A^TA$和$AA^T$的特征值是相同的</p>
+<h2 id="最小二乘、最小范数的最小二乘"><a href="#最小二乘、最小范数的最小二乘" class="headerlink" title="最小二乘、最小范数的最小二乘"></a>最小二乘、最小范数的最小二乘</h2><p>当我们有N个等式，n个未知数时，我们可以把等式表示为<br>$X_{Nxn}a_{nx1} = Y_{Nx1}$<br>当N=n且X可逆时，$a = X^{-1}Y$，<br>一般情况下，N!=n,因此不能直接求$X^{-1}$,可求近似解<br>我们定义最小二乘：$J=|Xa-Y|^2$,要求min($j$)时的$a$，对$a$求导可得：<br>$\frac{\mathrm{d}J}{\mathrm{d}a} = X^{T}(Xa-Y) = 0$<br>$X^TXa=X^TY$<br>当N&lt; n时，矩阵R(X^TX)&lt;=R(X)&lt;=n,不可逆<br>N &gt;n时，$a = (X^TX)^{-1}X^TY$，一般可逆，伪逆<br>为了防止过拟合，一般会加入正则项:$J = |Xa-Y|^2+\lambda|a|^2$，称为最小范数的最小二乘。<br>$\frac{\mathrm{d}J}{\mathrm{d}a} = X^{T}Xa-X^TY+\lambda a = 0$<br>$(X^TX+\lambda I)a = X^TY$<br>可以证明$(X^TX+\lambda I)$必可逆，此方法也称作岭回归</p>
+<h2 id="PCA"><a href="#PCA" class="headerlink" title="PCA"></a>PCA</h2><p>PCA是一种数据压缩的算法，例如n维空间上的向量，使用l(l&lt;&lt; n)维的向量来近似表示。<br>做PCA之前需要样本点中心化可以缩小误差？？？</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/25/paper_read/ObjectDetection/ObjectDetectionSummary/" rel="next" title="ObjectDetectionSummary论文笔记">
+                <i class="fa fa-chevron-left"></i> ObjectDetectionSummary论文笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/10/22/math_in_machine_learning/最优化理论知识梳理-有无约束的最优化/" rel="prev" title="【最优化理论知识梳理】--有无约束的最优化">
+                【最优化理论知识梳理】--有无约束的最优化 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <p class="site-author-name" itemprop="name">camey</p>
+            <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives/">
+            
+                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#标量、向量、矩阵的性质"><span class="nav-number">1.</span> <span class="nav-text">标量、向量、矩阵的性质</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SVD分解"><span class="nav-number">2.</span> <span class="nav-text">SVD分解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#先介绍特征分解："><span class="nav-number">2.1.</span> <span class="nav-text">先介绍特征分解：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SVD分解-1"><span class="nav-number">2.2.</span> <span class="nav-text">SVD分解</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最小二乘、最小范数的最小二乘"><span class="nav-number">3.</span> <span class="nav-text">最小二乘、最小范数的最小二乘</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PCA"><span class="nav-number">4.</span> <span class="nav-text">PCA</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">camey</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" href="https://hexo.io">Hexo</a></div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>
