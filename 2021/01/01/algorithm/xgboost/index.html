@@ -106,7 +106,7 @@
 <meta property="og:image" content="http://yoursite.com/pic/xgboost_pic2.png">
 <meta property="og:image" content="http://yoursite.com/pic/xgboost_pic3.png">
 <meta property="og:image" content="http://yoursite.com/pic/xgboost_pic4.png">
-<meta property="og:updated_time" content="2022-06-16T10:25:59.263Z">
+<meta property="og:updated_time" content="2022-06-16T10:28:39.343Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="机器学习-Xgboost">
 <meta name="twitter:description" content="使用Xgboost很长时间了，虽然看过几遍原版的论文，但是对于许多的细节处理及核心公式推导一直处于比较模糊的状态，最近正好梳理了一下，希望能够把xgboost的细节表达得清楚一些。">
@@ -486,9 +486,8 @@
 <p>但是对每个分割点进行计算的代价太大了了，尤其是数据量很大且分割点很多的时候，那么Xgboost采用了近似分割的方式，类似于分桶操作，一般的分桶思路是根据特征值的大小直接进行等宽或者等频的分桶，这样的方式其实是按照样本的数量进行划分，但是每个样本对$loss$的影响是不一样的，单纯按照样本数量来划分容易导致划分后左右叶子$loss$不均衡，Xgboost采用了一种对$loss$的影响权重等值百分比分位数划分算法(weight Quantile Sketch)，</p>
 <p><img src="/pic/xgboost_pic4.png" alt="logo" title="xgboost 分位点划分"></p>
 <p>我们对上面的（4）式进行化简：</p>
-<p>$Obj^t = \sum_{i=1}^{n}[l(\hat{y_i}^{t-1},y_i)+ g_i f_t(x_i)+ \frac{1}{2} h_i f_t^2(x_i)]+\sum_{i=1}^{t}\Omega(f_i)$ ——（4）</p>
-<pre><code>      $=\sum_{i=1}^{n}[ g_i f_t(x_i)+ \frac{1}{2} h_i f_t^2(x_i)]+\Omega(f_t)+Constant$
-</code></pre><p>​          $=\sum_{i=1}^{n}[\frac{1}{2} h_i \frac{2 g_i f_t(x_i)}{h_i}+ \frac{1}{2} h_i f_t^2(x_i)]+\Omega(f_t)+Constant$</p>
+<p>$Obj^t = \sum_{i=1}^{n}[l(\hat{y_i}^{t-1},y_i)+ g_i f_t(x_i)+ \frac{1}{2} h_i f_t^2(x_i)]+\sum_{i=1}^{t}\Omega(f_i)$ ——（4）<br>          $=\sum_{i=1}^{n}[ g_i f_t(x_i)+ \frac{1}{2} h_i f_t^2(x_i)]+\Omega(f_t)+Constant$</p>
+<p>​          $=\sum_{i=1}^{n}[\frac{1}{2} h_i \frac{2 g_i f_t(x_i)}{h_i}+ \frac{1}{2} h_i f_t^2(x_i)]+\Omega(f_t)+Constant$</p>
 <p>​          $=\sum_{i=1}^{n}\frac{1}{2} h_i[2 \frac{g_i}{h_i} f_t(x_i)+f_t^2(x_i)]+\Omega(f_t)+Constant$</p>
 <p>​          $=\sum_{i=1}^{n}\frac{1}{2} h_i[(2 \frac{g_i}{h_i} f_t(x_i)+f_t^2(x_i)+(\frac{g_i}{h_i})^2)-(\frac{g_i}{h_i})^2]+\Omega(f_t)+Constant$</p>
 <p>​          $=\sum_{i=1}^{n} \frac{1}{2} h_i[(f_t(x_i)+\frac{g_i}{h_i})^2]+\Omega(f_t)+Constant$ #$\frac{g_i}{h_i}为常数$</p>
