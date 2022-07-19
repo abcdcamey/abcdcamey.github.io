@@ -102,7 +102,7 @@
 <meta property="og:site_name" content="Ecosphere">
 <meta property="og:description" content="强化学习经典算法总结">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2022-07-19T10:42:42.947Z">
+<meta property="og:updated_time" content="2022-07-19T10:56:45.870Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="强化学习算法总结">
 <meta name="twitter:description" content="强化学习经典算法总结">
@@ -492,7 +492,7 @@ r_j\space if\space episode \space terminates \space at \space step \space j+1  \
 <p>对于每一个transition：</p>
 <p>1：计算优势函数$Advantage_t = \sum_{k=t}^{T}discount_{k-t}(r_{k}+\gamma v_{k+1}-v_{k})$</p>
 <p>2：计算Importance Samples的调整项:$prob_ratio_t = e^{new_prob_t}/e^{old_prob_t}$，$new_prob_{t}$为最新Actor产生的$logP(a_t)$</p>
-<p>3、根据公式，计算目标函数，并根据目标函数计算Actor的更新梯度:$J(\theta)=actor_loss=-min(prob_ratio<em>Advantage_t,Clip(prob_ratio,1-\epsilon,1+\epsilon)</em>Advantage_t)$</p>
+<p>3、根据公式，计算目标函数，并根据目标函数计算Actor的更新梯度:$J(\theta)=actor_loss=-min(prob_ratio <em> Advantage_t,Clip(prob_ratio,1-\epsilon,1+\epsilon) </em> Advantage_t)$</p>
 <p>4、计算Critic的网络的目标函数:</p>
 <p>$critic_loss = ((Advantage_t+old_critic_value_t)-new_critic_value_t)^2$，$new_critic_value_t$为最新Critic产生的状态价值函数</p>
 <p>5、根据两个目标函数梯度，反向传播更新网络参数</p>
@@ -514,7 +514,7 @@ r_j\space if\space episode \space terminates \space at \space step \space j+1  \
 <p>根据Actor获取 action，存储 transition:$(s_t,a_t,r_t,s_{t+1})$</p>
 <p>对于一个batch的transition:</p>
 <p>1、计算Critic的目标$y_t=r_t+\gamma min(Q_1’(s_{t+1},u’(s_{t+1})),Q_2’(s_{t+1},u’(s_{t+1})))$</p>
-<p>2、计算$critic_loss = 0.5<em>(y_t-Q_1(s_t,a_t))^2+0.5</em>(y_t-Q_2(s_t,a_t))^2$</p>
+<p>2、计算$critic_loss = 0.5 <em> (y_t-Q_1(s_t,a_t))^2+0.5 </em> (y_t-Q_2(s_t,a_t))^2$</p>
 <p>3、计算$actor_loss^{\theta^u} = -Q_1(s_t,u(s_t))$，更新$u$的参数</p>
 <p>4、更新critic网络和actor网络，actor更新相对critic延迟</p>
 <p>5、定期软更新Target Actor网络$u’$和Target Critic网络$Q_1’,Q_2’$</p>
