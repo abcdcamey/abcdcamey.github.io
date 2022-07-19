@@ -102,7 +102,7 @@
 <meta property="og:site_name" content="Ecosphere">
 <meta property="og:description" content="强化学习经典算法总结">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2022-07-19T10:56:45.870Z">
+<meta property="og:updated_time" content="2022-07-19T12:03:36.426Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="强化学习算法总结">
 <meta name="twitter:description" content="强化学习经典算法总结">
@@ -372,7 +372,7 @@
                   <span class="post-meta-item-text">Words count in article&#58;</span>
                 
                 <span title="Words count in article">
-                  391
+                  1.3k
                 </span>
               
 
@@ -454,26 +454,22 @@
 </div>
 <h3 id="各算法核心公式"><a href="#各算法核心公式" class="headerlink" title="各算法核心公式"></a>各算法核心公式</h3><h4 id="DQN"><a href="#DQN" class="headerlink" title="DQN"></a>DQN</h4><p>初始化$Q$网络和Target$\hat Q$网络</p>
 <p>根据Q值获取 action:</p>
-<script type="math/tex; mode=display">
-a_t=\left\{ \begin{flalign} argmax_a(Q(s_t,\theta)\space if \space random > \epsilon\\
-random (A)\space if \space random <= \epsilon \end{flalign}\right.</script><p>存储 transition:$(s_t,a_t,r_t,s_{t+1})$</p>
+<p>$a_t= argmax_a(Q(s_t,\theta)\space if \space random &gt; \epsilon\  else \  random (A)$</p>
+<p>存储 transition:$(s_t,a_t,r_t,s_{t+1})$</p>
 <p>计算 Loss:</p>
 <p>根据 transition:$(s_t,a_t,r_t,s_{t+1})$</p>
 <p>$\hat y_j = Q(s_j,a_j,\theta)$</p>
-<script type="math/tex; mode=display">
-y_j=\left\{ \begin{flalign} r_j+\gamma max_{a_{j+1}}\hat Q(s_{j+1},a_{j+1};\hat \theta) \\
-r_j\space if\space episode \space terminates \space at \space step \space j+1  \end{flalign}\right.</script><p>$loss = (\hat y_j-y_j)^2$</p>
+<p>$y_j=r_j+\gamma max_{a_{j+1}}\hat Q(s_{j+1},a_{j+1};\hat \theta)<br>\space if\  episode \ not \  terminates \space at \space step \space j+1 \ else \ r_j $</p>
+<p>$loss = (\hat y_j-y_j)^2$</p>
 <h4 id="DDQN"><a href="#DDQN" class="headerlink" title="DDQN"></a>DDQN</h4><p>初始化$Q$网络和Target$\hat Q$网络</p>
 <p>根据Q值获取 action:</p>
-<script type="math/tex; mode=display">
-a_t=\left\{ \begin{flalign} argmax_a(Q(s_t,\theta)\space if \space random > \epsilon\\
-random (A)\space if \space random <= \epsilon \end{flalign}\right.</script><p>存储 transition:$(s_t,a_t,r_t,s_{t+1})$</p>
+<p>$a_t=argmax_a(Q(s_t,\theta)\space if \space random &gt; \epsilon \ else \ random (A) $</p>
+<p>存储 transition:$(s_t,a_t,r_t,s_{t+1})$</p>
 <p>计算 Loss:</p>
 <p>根据 transition:$(s_t,a_t,r_t,s_{t+1})$</p>
 <p>$\hat y_j = Q(s_j,a_j,\theta)$</p>
-<script type="math/tex; mode=display">
-y_j=\left\{ \begin{flalign} r_j+\gamma \hat Q(s_{j+1},argmax_{a_{j+1}}(Q(s_{j+1},\theta));\hat \theta) \\
-r_j\space if\space episode \space terminates \space at \space step \space j+1  \end{flalign}\right.</script><p>$loss = (\hat y_j-y_j)^2$</p>
+<p>$y_j=r_j+\gamma \hat Q(s_{j+1},argmax_{a_{j+1}}(Q(s_{j+1},\theta));\hat \theta) \space if\space episode \space not \  terminates \space at \space step \space j+1 \ else \ r_j $</p>
+<p>$loss = (\hat y_j-y_j)^2$</p>
 <h4 id="SARSA（表格方式）"><a href="#SARSA（表格方式）" class="headerlink" title="SARSA（表格方式）"></a>SARSA（表格方式）</h4><p>初始化$Q$网络</p>
 <p>根据Q值和$\epsilon-greedy$获取 action:</p>
 <p>记录transition:$(s_t,a_t,r_t,s_{t+1})$</p>
@@ -486,36 +482,36 @@ r_j\space if\space episode \space terminates \space at \space step \space j+1  \
 <p>对于该episode中的每一个动作，计算$loss_{t} = -G_{t}*logP(a_t)$</p>
 <p>批量更新梯度</p>
 <p>Loss 的推导过程：</p>
-<p>[<a href="https://github.com/abcdcamey/RL-learning/blob/main/PolicyGradient/agent.png" target="_blank" rel="external">https://github.com/abcdcamey/RL-learning/blob/main/PolicyGradient/agent.png</a>]: </p>
+<p><a href="https://github.com/abcdcamey/RL-learning/blob/main/PolicyGradient/agent.png" target="_blank" rel="external">https://github.com/abcdcamey/RL-learning/blob/main/PolicyGradient/agent.png</a> </p>
 <h4 id="PPO-Clip-Proximal-Policy-Optimization"><a href="#PPO-Clip-Proximal-Policy-Optimization" class="headerlink" title="PPO-Clip(Proximal Policy Optimization)"></a>PPO-Clip(Proximal Policy Optimization)</h4><p>初始化Actor网络和Critic网络，Actor网络用来采集数据同时记录下动作概率P，Critic网络用来评估优势函数。</p>
 <p>使用Actor网络收集若干个episode的transition$(s_t,a_t,dist_t,value_t,logprob_{a_t},r_t…)$</p>
 <p>对于每一个transition：</p>
 <p>1：计算优势函数$Advantage_t = \sum_{k=t}^{T}discount_{k-t}(r_{k}+\gamma v_{k+1}-v_{k})$</p>
-<p>2：计算Importance Samples的调整项:$prob_ratio_t = e^{new_prob_t}/e^{old_prob_t}$，$new_prob_{t}$为最新Actor产生的$logP(a_t)$</p>
-<p>3、根据公式，计算目标函数，并根据目标函数计算Actor的更新梯度:$J(\theta)=actor_loss=-min(prob_ratio <em> Advantage_t,Clip(prob_ratio,1-\epsilon,1+\epsilon) </em> Advantage_t)$</p>
+<p>2：计算Importance Samples的调整项:$prob ratio_t = e^{newprob_t}/e^{oldprob_t}$，$new prob_{t}$为最新Actor产生的$logP(a_t)$</p>
+<p>3、根据公式，计算目标函数，并根据目标函数计算Actor的更新梯度:$J(\theta)=actor loss=-min(prob ratio \cdot Advantage_t,Clip(prob ratio,1-\epsilon,1+\epsilon) \cdot Advantage_t)$</p>
 <p>4、计算Critic的网络的目标函数:</p>
-<p>$critic_loss = ((Advantage_t+old_critic_value_t)-new_critic_value_t)^2$，$new_critic_value_t$为最新Critic产生的状态价值函数</p>
+<p>$critic loss = ((Advantage_t+oldcriticvalue_t)-new criticvalue_t)^2$，$new critic value_t$为最新Critic产生的状态价值函数</p>
 <p>5、根据两个目标函数梯度，反向传播更新网络参数</p>
 <h4 id="A2C"><a href="#A2C" class="headerlink" title="A2C"></a>A2C</h4><p>初始化Actor网络和Critic网络，Actor网络用来采集数据同时记录下动作概率P，Critic网络用来评估优势函数。</p>
 <p>使用Actor网络收集n个step的transition$(s_t,a_t,dist_t,value_t,logprob_{a_t},r_t…)$</p>
 <p>每n个step的transition：</p>
 <p>1、计算优势函数$Advantage_t = \sum_{k=n}^{1}r_{k}+\gamma v_{k+1}-v_{k}$</p>
-<p>2、对于每一个动作，计算$actor_loss_{t} = -Advantage_t*logP(a_t)$</p>
-<p>3、对于每一个动作，计算$critic_loss_t=Advantage_t^2$</p>
+<p>2、对于每一个动作，计算$actor loss_{t} = -Advantage_t \cdot logP(a_t)$</p>
+<p>3、对于每一个动作，计算$critic loss_t=Advantage_t^2$</p>
 <p>4、根据两个目标函数梯度，反向传播更新网络参数</p>
 <h4 id="DDPG-Deep-Deterministic-Policy-Gradient"><a href="#DDPG-Deep-Deterministic-Policy-Gradient" class="headerlink" title="DDPG(Deep Deterministic Policy Gradient)"></a>DDPG(Deep Deterministic Policy Gradient)</h4><p>初始化Actor网络($u(s)$)和Critic网络($Q(s,a)$)，copy初始化Target Actor网络$u’$和Target Critic网络$Q’$</p>
 <p>根据Actor获取 action，存储 transition:$(s_t,a_t,r_t,s_{t+1})$</p>
 <p>对于一个batch的transition:</p>
 <p>1、计算Critic的目标$y_t=r_t+\gamma Q’(s_{t+1},u’(s_{t+1}))$</p>
-<p>2、计算$critic_loss^{\theta^Q} = (y_t-Q(s_t,a_t))^2$，更新$Q$的参数</p>
-<p>3、计算$actor_loss^{\theta^u} = -Q(s_t,u(s_t))$，更新$u$的参数</p>
+<p>2、计算$critic loss^{\theta^Q} = (y_t-Q(s_t,a_t))^2$，更新$Q$的参数</p>
+<p>3、计算$actor loss^{\theta^u} = -Q(s_t,u(s_t))$，更新$u$的参数</p>
 <p>4、软更新Target Actor网络$u’$和Target Critic网络$Q’$</p>
 <h4 id="TD3-Twin-Delayed-DDPG"><a href="#TD3-Twin-Delayed-DDPG" class="headerlink" title="TD3(Twin Delayed DDPG)"></a>TD3(Twin Delayed DDPG)</h4><p>初始化Actor网络($u(s)$)和Critic网络($Q(s,a)$)，copy初始化Target Actor网络$u’$和Target Critic网络$Q’$</p>
 <p>根据Actor获取 action，存储 transition:$(s_t,a_t,r_t,s_{t+1})$</p>
 <p>对于一个batch的transition:</p>
 <p>1、计算Critic的目标$y_t=r_t+\gamma min(Q_1’(s_{t+1},u’(s_{t+1})),Q_2’(s_{t+1},u’(s_{t+1})))$</p>
-<p>2、计算$critic_loss = 0.5 <em> (y_t-Q_1(s_t,a_t))^2+0.5 </em> (y_t-Q_2(s_t,a_t))^2$</p>
-<p>3、计算$actor_loss^{\theta^u} = -Q_1(s_t,u(s_t))$，更新$u$的参数</p>
+<p>2、计算$critic loss = 0.5 \cdot (y_t-Q_1(s_t,a_t))^2+0.5 \cdot (y_t-Q_2(s_t,a_t))^2$</p>
+<p>3、计算$actor loss^{\theta^u} = -Q_1(s_t,u(s_t))$，更新$u$的参数</p>
 <p>4、更新critic网络和actor网络，actor更新相对critic延迟</p>
 <p>5、定期软更新Target Actor网络$u’$和Target Critic网络$Q_1’,Q_2’$</p>
 
