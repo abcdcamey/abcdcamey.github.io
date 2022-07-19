@@ -95,17 +95,17 @@
 
 
 
-<meta name="description" content="本文记录第五课第三周视频中的概念">
+<meta name="description" content="强化学习经典算法总结">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【Andrew Ng 深度学习视频笔记】-lec5.3">
-<meta property="og:url" content="http://yoursite.com/2018/10/07/AndrewNg/【Andrew Ng 深度学习视频笔记】-lec5.3/index.html">
+<meta property="og:title" content="强化学习算法总结">
+<meta property="og:url" content="http://yoursite.com/2022/07/01/reinforcement_learning/rl_overview/index.html">
 <meta property="og:site_name" content="Ecosphere">
-<meta property="og:description" content="本文记录第五课第三周视频中的概念">
+<meta property="og:description" content="强化学习经典算法总结">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-10-26T01:46:29.000Z">
+<meta property="og:updated_time" content="2022-07-19T10:42:42.947Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="【Andrew Ng 深度学习视频笔记】-lec5.3">
-<meta name="twitter:description" content="本文记录第五课第三周视频中的概念">
+<meta name="twitter:title" content="强化学习算法总结">
+<meta name="twitter:description" content="强化学习经典算法总结">
 
 
 
@@ -135,13 +135,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/10/07/AndrewNg/【Andrew Ng 深度学习视频笔记】-lec5.3/"/>
+  <link rel="canonical" href="http://yoursite.com/2022/07/01/reinforcement_learning/rl_overview/"/>
 
 
 
 
 
-  <title>【Andrew Ng 深度学习视频笔记】-lec5.3 | Ecosphere</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title>强化学习算法总结 | Ecosphere</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -278,7 +278,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/10/07/AndrewNg/【Andrew Ng 深度学习视频笔记】-lec5.3/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/07/01/reinforcement_learning/rl_overview/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="camey">
@@ -295,7 +295,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">【Andrew Ng 深度学习视频笔记】-lec5.3</h1>
+          <h1 class="post-title" itemprop="name headline">强化学习算法总结</h1>
         
 
         <div class="post-meta">
@@ -307,8 +307,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-07T19:41:37+08:00">
-                2018-10-07
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2022-07-01T20:41:37+08:00">
+                2022-07-01
               </time>
             
 
@@ -330,8 +330,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/深度学习/" itemprop="url" rel="index">
-                    <span itemprop="name">深度学习</span>
+                  <a href="/categories/强化学习/" itemprop="url" rel="index">
+                    <span itemprop="name">强化学习</span>
                   </a>
                 </span>
 
@@ -347,7 +347,7 @@
 
           
           
-             <span id="/2018/10/07/AndrewNg/【Andrew Ng 深度学习视频笔记】-lec5.3/" class="leancloud_visitors" data-flag-title="【Andrew Ng 深度学习视频笔记】-lec5.3">
+             <span id="/2022/07/01/reinforcement_learning/rl_overview/" class="leancloud_visitors" data-flag-title="强化学习算法总结">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -372,7 +372,7 @@
                   <span class="post-meta-item-text">Words count in article&#58;</span>
                 
                 <span title="Words count in article">
-                  32
+                  391
                 </span>
               
 
@@ -397,8 +397,128 @@
       
 
       
-        <p>本文记录第五课第三周视频中的概念<br><a id="more"></a></p>
-<h3 id="基础模型"><a href="#基础模型" class="headerlink" title="基础模型"></a>基础模型</h3><h3 id="定向搜索"><a href="#定向搜索" class="headerlink" title="定向搜索"></a>定向搜索</h3><h3 id="Bleu得分"><a href="#Bleu得分" class="headerlink" title="Bleu得分"></a>Bleu得分</h3><h3 id="注意力模型"><a href="#注意力模型" class="headerlink" title="注意力模型"></a>注意力模型</h3>
+        <p>强化学习经典算法总结</p>
+<a id="more"></a>
+<h3 id="各经典算法总结"><a href="#各经典算法总结" class="headerlink" title="各经典算法总结"></a>各经典算法总结</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:left">算法</th>
+<th>off/on policy</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">DQN</td>
+<td>off policy</td>
+<td>维护Q网络和Target Q网络</td>
+</tr>
+<tr>
+<td style="text-align:left">DDQN</td>
+<td>off policy</td>
+<td>维护Q网络和Target Q网络，下一步的action从当前Q网络选择，代入Target Q网络，避免Target过大</td>
+</tr>
+<tr>
+<td style="text-align:left">SARSA</td>
+<td>on policy</td>
+<td>收集一次transition，更新一次模型</td>
+</tr>
+<tr>
+<td style="text-align:left">PG</td>
+<td>on policy</td>
+<td>需要完整采样，解决连续动作问题，P网络直接输出动作的概率，优化目标为最大化R</td>
+</tr>
+<tr>
+<td style="text-align:left">PPO</td>
+<td>off policy</td>
+<td>需要完整采样，PG的变形，引入importance sampling可使用任意分布的采样。优化方式和PG类似：policy网络最大化R，critic网络最小化误差。引入KL散度和clip。</td>
+</tr>
+<tr>
+<td style="text-align:left">A2C/A3C</td>
+<td>on policy</td>
+<td>PG的改进，不需要完整采样，结合了PG和时序差分，policy输出动作，最大化R。critic网络预估V值，计算优势函数$Advantage_t = r_t+V(s_{t+1})-V(s_t)$</td>
+</tr>
+<tr>
+<td style="text-align:left">DDPQ</td>
+<td>off policy</td>
+<td>DQN的连续动作版本，Actor给出动作P值，Critic评估动作的Q值，Target Actor和Target Critic作为目标网络，Actor目标为最大化期望回报，Critic目标为最小化与真实回报的误差。</td>
+</tr>
+<tr>
+<td style="text-align:left">TD3</td>
+<td>off policy</td>
+<td>DDPG的改进版本，Critic使用两个相同结构的Q网络，作为目标Q值时取两个Q网络中较小的那个。actor的更新相对critic延迟。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="各算法核心公式"><a href="#各算法核心公式" class="headerlink" title="各算法核心公式"></a>各算法核心公式</h3><h4 id="DQN"><a href="#DQN" class="headerlink" title="DQN"></a>DQN</h4><p>初始化$Q$网络和Target$\hat Q$网络</p>
+<p>根据Q值获取 action:</p>
+<script type="math/tex; mode=display">
+a_t=\left\{ \begin{flalign} argmax_a(Q(s_t,\theta)\space if \space random > \epsilon\\
+random (A)\space if \space random <= \epsilon \end{flalign}\right.</script><p>存储 transition:$(s_t,a_t,r_t,s_{t+1})$</p>
+<p>计算 Loss:</p>
+<p>根据 transition:$(s_t,a_t,r_t,s_{t+1})$</p>
+<p>$\hat y_j = Q(s_j,a_j,\theta)$</p>
+<script type="math/tex; mode=display">
+y_j=\left\{ \begin{flalign} r_j+\gamma max_{a_{j+1}}\hat Q(s_{j+1},a_{j+1};\hat \theta) \\
+r_j\space if\space episode \space terminates \space at \space step \space j+1  \end{flalign}\right.</script><p>$loss = (\hat y_j-y_j)^2$</p>
+<h4 id="DDQN"><a href="#DDQN" class="headerlink" title="DDQN"></a>DDQN</h4><p>初始化$Q$网络和Target$\hat Q$网络</p>
+<p>根据Q值获取 action:</p>
+<script type="math/tex; mode=display">
+a_t=\left\{ \begin{flalign} argmax_a(Q(s_t,\theta)\space if \space random > \epsilon\\
+random (A)\space if \space random <= \epsilon \end{flalign}\right.</script><p>存储 transition:$(s_t,a_t,r_t,s_{t+1})$</p>
+<p>计算 Loss:</p>
+<p>根据 transition:$(s_t,a_t,r_t,s_{t+1})$</p>
+<p>$\hat y_j = Q(s_j,a_j,\theta)$</p>
+<script type="math/tex; mode=display">
+y_j=\left\{ \begin{flalign} r_j+\gamma \hat Q(s_{j+1},argmax_{a_{j+1}}(Q(s_{j+1},\theta));\hat \theta) \\
+r_j\space if\space episode \space terminates \space at \space step \space j+1  \end{flalign}\right.</script><p>$loss = (\hat y_j-y_j)^2$</p>
+<h4 id="SARSA（表格方式）"><a href="#SARSA（表格方式）" class="headerlink" title="SARSA（表格方式）"></a>SARSA（表格方式）</h4><p>初始化$Q$网络</p>
+<p>根据Q值和$\epsilon-greedy$获取 action:</p>
+<p>记录transition:$(s_t,a_t,r_t,s_{t+1})$</p>
+<p>$\hat y_t = Q(s_t,a_t,\theta)$</p>
+<p>$y_t = r_t+\gamma (Q(s_{t+1},a_{t+1}))$，$a_{t+1}$根据Q值和$\epsilon-greedy$获取 </p>
+<p>更新：$Q(s,a)\leftarrow$ $Q(s,a)$+$lr*(y_t - \hat y_t)$</p>
+<h4 id="Policy-Gradient"><a href="#Policy-Gradient" class="headerlink" title="Policy Gradient"></a>Policy Gradient</h4><p>初始化P网络</p>
+<p>使用P网络获取一个episode的transition:$(s_1,a_1,r_1,s_{2},a_2,r_2…s_t,a_{t},r_{t})$</p>
+<p>计算该episode的$G$:$G_t=r_{t+1}+\gamma G_{t+1}$</p>
+<p>对于该episode中的每一个动作，计算$loss_{t} = -G_{t}*logP(a_t)$</p>
+<p>批量更新梯度</p>
+<p>Loss 的推导过程：</p>
+<p>[<a href="https://github.com/abcdcamey/RL-learning/blob/main/PolicyGradient/agent.png" target="_blank" rel="external">https://github.com/abcdcamey/RL-learning/blob/main/PolicyGradient/agent.png</a>]: </p>
+<h4 id="PPO-Clip-Proximal-Policy-Optimization"><a href="#PPO-Clip-Proximal-Policy-Optimization" class="headerlink" title="PPO-Clip(Proximal Policy Optimization)"></a>PPO-Clip(Proximal Policy Optimization)</h4><p>初始化Actor网络和Critic网络，Actor网络用来采集数据同时记录下动作概率P，Critic网络用来评估优势函数。</p>
+<p>使用Actor网络收集若干个episode的transition$(s_t,a_t,dist_t,value_t,logprob_{a_t},r_t…)$</p>
+<p>对于每一个transition：</p>
+<p>1：计算优势函数$Advantage_t = \sum_{k=t}^{T}discount_{k-t}(r_{k}+\gamma v_{k+1}-v_{k})$</p>
+<p>2：计算Importance Samples的调整项:$prob_ratio_t = e^{new_prob_t}/e^{old_prob_t}$，$new_prob_{t}$为最新Actor产生的$logP(a_t)$</p>
+<p>3、根据公式，计算目标函数，并根据目标函数计算Actor的更新梯度:$J(\theta)=actor_loss=-min(prob_ratio<em>Advantage_t,Clip(prob_ratio,1-\epsilon,1+\epsilon)</em>Advantage_t)$</p>
+<p>4、计算Critic的网络的目标函数:</p>
+<p>$critic_loss = ((Advantage_t+old_critic_value_t)-new_critic_value_t)^2$，$new_critic_value_t$为最新Critic产生的状态价值函数</p>
+<p>5、根据两个目标函数梯度，反向传播更新网络参数</p>
+<h4 id="A2C"><a href="#A2C" class="headerlink" title="A2C"></a>A2C</h4><p>初始化Actor网络和Critic网络，Actor网络用来采集数据同时记录下动作概率P，Critic网络用来评估优势函数。</p>
+<p>使用Actor网络收集n个step的transition$(s_t,a_t,dist_t,value_t,logprob_{a_t},r_t…)$</p>
+<p>每n个step的transition：</p>
+<p>1、计算优势函数$Advantage_t = \sum_{k=n}^{1}r_{k}+\gamma v_{k+1}-v_{k}$</p>
+<p>2、对于每一个动作，计算$actor_loss_{t} = -Advantage_t*logP(a_t)$</p>
+<p>3、对于每一个动作，计算$critic_loss_t=Advantage_t^2$</p>
+<p>4、根据两个目标函数梯度，反向传播更新网络参数</p>
+<h4 id="DDPG-Deep-Deterministic-Policy-Gradient"><a href="#DDPG-Deep-Deterministic-Policy-Gradient" class="headerlink" title="DDPG(Deep Deterministic Policy Gradient)"></a>DDPG(Deep Deterministic Policy Gradient)</h4><p>初始化Actor网络($u(s)$)和Critic网络($Q(s,a)$)，copy初始化Target Actor网络$u’$和Target Critic网络$Q’$</p>
+<p>根据Actor获取 action，存储 transition:$(s_t,a_t,r_t,s_{t+1})$</p>
+<p>对于一个batch的transition:</p>
+<p>1、计算Critic的目标$y_t=r_t+\gamma Q’(s_{t+1},u’(s_{t+1}))$</p>
+<p>2、计算$critic_loss^{\theta^Q} = (y_t-Q(s_t,a_t))^2$，更新$Q$的参数</p>
+<p>3、计算$actor_loss^{\theta^u} = -Q(s_t,u(s_t))$，更新$u$的参数</p>
+<p>4、软更新Target Actor网络$u’$和Target Critic网络$Q’$</p>
+<h4 id="TD3-Twin-Delayed-DDPG"><a href="#TD3-Twin-Delayed-DDPG" class="headerlink" title="TD3(Twin Delayed DDPG)"></a>TD3(Twin Delayed DDPG)</h4><p>初始化Actor网络($u(s)$)和Critic网络($Q(s,a)$)，copy初始化Target Actor网络$u’$和Target Critic网络$Q’$</p>
+<p>根据Actor获取 action，存储 transition:$(s_t,a_t,r_t,s_{t+1})$</p>
+<p>对于一个batch的transition:</p>
+<p>1、计算Critic的目标$y_t=r_t+\gamma min(Q_1’(s_{t+1},u’(s_{t+1})),Q_2’(s_{t+1},u’(s_{t+1})))$</p>
+<p>2、计算$critic_loss = 0.5<em>(y_t-Q_1(s_t,a_t))^2+0.5</em>(y_t-Q_2(s_t,a_t))^2$</p>
+<p>3、计算$actor_loss^{\theta^u} = -Q_1(s_t,u(s_t))$，更新$u$的参数</p>
+<p>4、更新critic网络和actor网络，actor更新相对critic延迟</p>
+<p>5、定期软更新Target Actor网络$u’$和Target Critic网络$Q_1’,Q_2’$</p>
+
       
     </div>
     
@@ -422,8 +542,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/09/26/AndrewNg/【Andrew Ng 深度学习视频笔记】-lec5.2/" rel="next" title="【Andrew Ng 深度学习视频笔记】-lec5.2">
-                <i class="fa fa-chevron-left"></i> 【Andrew Ng 深度学习视频笔记】-lec5.2
+              <a href="/2021/01/01/algorithm/xgboost/" rel="next" title="机器学习-Xgboost">
+                <i class="fa fa-chevron-left"></i> 机器学习-Xgboost
               </a>
             
           </div>
@@ -431,10 +551,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/03/09/paper_read/OCR/CTPN/" rel="prev" title="CTPN论文笔记(Connectionist Text Proposal Network)">
-                CTPN论文笔记(Connectionist Text Proposal Network) <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -560,7 +676,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#基础模型"><span class="nav-number">1.</span> <span class="nav-text">基础模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#定向搜索"><span class="nav-number">2.</span> <span class="nav-text">定向搜索</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bleu得分"><span class="nav-number">3.</span> <span class="nav-text">Bleu得分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注意力模型"><span class="nav-number">4.</span> <span class="nav-text">注意力模型</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#各经典算法总结"><span class="nav-number">1.</span> <span class="nav-text">各经典算法总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#各算法核心公式"><span class="nav-number">2.</span> <span class="nav-text">各算法核心公式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#DQN"><span class="nav-number">2.1.</span> <span class="nav-text">DQN</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DDQN"><span class="nav-number">2.2.</span> <span class="nav-text">DDQN</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SARSA（表格方式）"><span class="nav-number">2.3.</span> <span class="nav-text">SARSA（表格方式）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Policy-Gradient"><span class="nav-number">2.4.</span> <span class="nav-text">Policy Gradient</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PPO-Clip-Proximal-Policy-Optimization"><span class="nav-number">2.5.</span> <span class="nav-text">PPO-Clip(Proximal Policy Optimization)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A2C"><span class="nav-number">2.6.</span> <span class="nav-text">A2C</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DDPG-Deep-Deterministic-Policy-Gradient"><span class="nav-number">2.7.</span> <span class="nav-text">DDPG(Deep Deterministic Policy Gradient)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TD3-Twin-Delayed-DDPG"><span class="nav-number">2.8.</span> <span class="nav-text">TD3(Twin Delayed DDPG)</span></a></li></ol></li></ol></div>
             
 
           </div>
