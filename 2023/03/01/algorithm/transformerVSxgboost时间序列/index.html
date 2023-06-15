@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="transformer结构在近几年可谓大放异彩，这几天正好有个时间序列预测的小场景，所以动手试了一下transformer的时序预测能力。同时，为了作为对比，也使用了xgboost树模型对预测效果进行了对比。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="transformerVSxgboost时间序列任务">
+<meta property="og:url" content="http://yoursite.com/2023/03/01/algorithm/transformerVSxgboost时间序列/index.html">
+<meta property="og:site_name" content="Ecosphere">
+<meta property="og:description" content="transformer结构在近几年可谓大放异彩，这几天正好有个时间序列预测的小场景，所以动手试了一下transformer的时序预测能力。同时，为了作为对比，也使用了xgboost树模型对预测效果进行了对比。">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://yoursite.com/pic/20230615_data.png">
+<meta property="og:image" content="http://yoursite.com/pic/20230615_transformer_arc.png">
+<meta property="og:image" content="http://yoursite.com/pic/20230615_transformer.png">
+<meta property="og:image" content="http://yoursite.com/pic/20230615_xgboost_ts.png">
+<meta property="og:updated_time" content="2023-06-15T09:30:12.344Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="transformerVSxgboost时间序列任务">
+<meta name="twitter:description" content="transformer结构在近几年可谓大放异彩，这几天正好有个时间序列预测的小场景，所以动手试了一下transformer的时序预测能力。同时，为了作为对比，也使用了xgboost树模型对预测效果进行了对比。">
+<meta name="twitter:image" content="http://yoursite.com/pic/20230615_data.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2023/03/01/algorithm/transformerVSxgboost时间序列/"/>
+
+
+
+
+
+  <title>transformerVSxgboost时间序列任务 | Ecosphere</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ecosphere</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">一叶知秋</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/03/01/algorithm/transformerVSxgboost时间序列/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="camey">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ecosphere">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">transformerVSxgboost时间序列任务</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2023-03-01T20:41:37+08:00">
+                2023-03-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2023/03/01/algorithm/transformerVSxgboost时间序列/" class="leancloud_visitors" data-flag-title="transformerVSxgboost时间序列任务">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  3.1k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>transformer结构在近几年可谓大放异彩，这几天正好有个时间序列预测的小场景，所以动手试了一下transformer的时序预测能力。同时，为了作为对比，也使用了xgboost树模型对预测效果进行了对比。</p>
+<a id="more"></a>
+<h1 id="数据准备"><a href="#数据准备" class="headerlink" title="数据准备"></a>数据准备</h1><p>在数据方面，手动生成了具有一定周期和趋势的一维序列数据，数据形态和代码如下：</p>
+<p><img src="/pic/20230615_data.png" alt="logo" title="time series data"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</div><div class="line">np.random.seed(<span class="number">1</span>)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generate_data</span><span class="params">(sequence_length = <span class="number">2000</span>)</span>:</span></div><div class="line"></div><div class="line">    <span class="comment"># 生成时间序列数据和目标值</span></div><div class="line">    feature_dim = <span class="number">3</span>  <span class="comment"># 决定序列值的维度</span></div><div class="line">    features = np.zeros((sequence_length, feature_dim))</div><div class="line">    targets = np.zeros(sequence_length)</div><div class="line"></div><div class="line">    <span class="comment"># 生成特征数据和目标值</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(sequence_length):</div><div class="line">        <span class="comment"># 生成特征数据</span></div><div class="line">        features[i, <span class="number">0</span>] = np.sin(<span class="number">0.1</span> * i)  <span class="comment"># 特征1：正弦函数</span></div><div class="line">        features[i, <span class="number">1</span>] = <span class="number">0.5</span> * np.random.randn() + <span class="number">2</span>  <span class="comment"># 特征2：高斯噪声偏移</span></div><div class="line">        features[i, <span class="number">2</span>] = i/<span class="number">200</span> <span class="comment"># 特征3：趋势</span></div><div class="line">        <span class="comment"># 生成目标值</span></div><div class="line">        targets[i] = <span class="number">0.7</span> * features[i, <span class="number">0</span>] + <span class="number">0.2</span> * features[i, <span class="number">1</span>] + <span class="number">0.1</span> * features[i, <span class="number">2</span>]</div><div class="line">    <span class="keyword">return</span> targets</div><div class="line"></div><div class="line">data = generate_data(<span class="number">10000</span>)</div></pre></td></tr></table></figure>
+<h1 id="transformer时间序列模型"><a href="#transformer时间序列模型" class="headerlink" title="transformer时间序列模型"></a>transformer时间序列模型</h1><p>本文使用的transformer预测时序任务架构参考的是 <a href="https://arxiv.org/abs/2001.08317" target="_blank" rel="external">https://arxiv.org/abs/2001.08317</a>, 整体结构如下：</p>
+<p><img src="/pic/20230615_transformer_arc.png" alt="logo" title="transformer arc"></p>
+<p>由于我们的数据是时序的，因此训练的时候需要对src和tgt做mask，同时tgt的输入和输出是一对一的关系。<br>在做推理时，我们往往只知道需要预测的tgt序列当中最早的一个数据，因此我们需要循环着做推理，即把上一时刻的预测值加入到tgt输入中去预测下一时刻的值，再把下一时刻的值加入tgt如此循环。</p>
+<p>最终transformer时间序列预测的效果图如下,预测值mae大概0.122:<br><img src="/pic/20230615_transformer.png" alt="logo" title="transformer predict"></p>
+<h1 id="xgboost时间序列模型"><a href="#xgboost时间序列模型" class="headerlink" title="xgboost时间序列模型"></a>xgboost时间序列模型</h1><p>作为对比，使用了传统的提升树模型xgboost训练了同样一组数据，简单的做了一些调参,预测值mae大概0.124,<br>指标上看xgboost只比transformer模型弱了一点点，但是从可视化的图片来看，tranformer模型的预测结果方差要比xgboost小一些,从数据上看也是这样，transformer模型的预测误差方差为0.084，而xgboost预测误差方差为0.106。<br><img src="/pic/20230615_xgboost_ts.png" alt="logo" title="xgboost predict"></p>
+<p>具体实现代码如下：</p>
+<p>TimeSeriesTransformer类:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">TimeSeriesTransformer</span><span class="params">(nn.Module)</span>:</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self,</span></span></div><div class="line"><span class="function"><span class="params">                 input_size: int,</span></span></div><div class="line"><span class="function"><span class="params">                 dec_seq_len: int,</span></span></div><div class="line"><span class="function"><span class="params">                 batch_first: bool,</span></span></div><div class="line"><span class="function"><span class="params">                 out_seq_len: int = <span class="number">58</span>,</span></span></div><div class="line"><span class="function"><span class="params">                 dim_val: int = <span class="number">512</span>,</span></span></div><div class="line"><span class="function"><span class="params">                 n_encoder_layers: int = <span class="number">4</span>,</span></span></div><div class="line"><span class="function"><span class="params">                 n_decoder_layers: int = <span class="number">4</span>,</span></span></div><div class="line"><span class="function"><span class="params">                 n_heads: int = <span class="number">8</span>,</span></span></div><div class="line"><span class="function"><span class="params">                 dropout_encoder: float = <span class="number">0.2</span>,</span></span></div><div class="line"><span class="function"><span class="params">                 dropout_decoder: float = <span class="number">0.2</span>,</span></span></div><div class="line"><span class="function"><span class="params">                 dropout_pos_enc: float = <span class="number">0.1</span>,</span></span></div><div class="line"><span class="function"><span class="params">                 dim_feedforward_encoder: int = <span class="number">2048</span>,</span></span></div><div class="line"><span class="function"><span class="params">                 dim_feedforward_decoder: int = <span class="number">2048</span>,</span></span></div><div class="line"><span class="function"><span class="params">                 num_predicted_features: int = <span class="number">1</span></span></span></div><div class="line"><span class="function"><span class="params">                 )</span>:</span></div><div class="line">        <span class="string">"""</span></div><div class="line"><span class="string">        Args:</span></div><div class="line"><span class="string">            input_size: int, number of input variables. 1 if univariate.</span></div><div class="line"><span class="string">            dec_seq_len: int, the length of the input sequence fed to the decoder</span></div><div class="line"><span class="string">            dim_val: int, aka d_model. All sub-layers in the model produce</span></div><div class="line"><span class="string">                     outputs of dimension dim_val</span></div><div class="line"><span class="string">            n_encoder_layers: int, number of stacked encoder layers in the encoder</span></div><div class="line"><span class="string">            n_decoder_layers: int, number of stacked encoder layers in the decoder</span></div><div class="line"><span class="string">            n_heads: int, the number of attention heads (aka parallel attention layers)</span></div><div class="line"><span class="string">            dropout_encoder: float, the dropout rate of the encoder</span></div><div class="line"><span class="string">            dropout_decoder: float, the dropout rate of the decoder</span></div><div class="line"><span class="string">            dropout_pos_enc: float, the dropout rate of the positional encoder</span></div><div class="line"><span class="string">            dim_feedforward_encoder: int, number of neurons in the linear layer</span></div><div class="line"><span class="string">                                     of the encoder</span></div><div class="line"><span class="string">            dim_feedforward_decoder: int, number of neurons in the linear layer</span></div><div class="line"><span class="string">                                     of the decoder</span></div><div class="line"><span class="string">            num_predicted_features: int, the number of features you want to predict.</span></div><div class="line"><span class="string">                                    Most of the time, this will be 1 because we're</span></div><div class="line"><span class="string">                                    only forecasting FCR-N prices in DK2, but in</span></div><div class="line"><span class="string">                                    we wanted to also predict FCR-D with the same</span></div><div class="line"><span class="string">                                    model, num_predicted_features should be 2.</span></div><div class="line"><span class="string">        """</span></div><div class="line"></div><div class="line">        super().__init__()</div><div class="line"></div><div class="line">        self.dec_seq_len = dec_seq_len</div><div class="line"></div><div class="line">        self.encoder_input_layer = nn.Linear(</div><div class="line">            in_features=input_size,</div><div class="line">            out_features=dim_val</div><div class="line">        )</div><div class="line"></div><div class="line">        self.decoder_input_layer = nn.Linear(</div><div class="line">            in_features=num_predicted_features,</div><div class="line">            out_features=dim_val</div><div class="line">        )</div><div class="line"></div><div class="line">        self.linear_mapping = nn.Linear(</div><div class="line">            in_features=dim_val,</div><div class="line">            out_features=num_predicted_features</div><div class="line">        )</div><div class="line"></div><div class="line">        <span class="comment"># Create positional encoder</span></div><div class="line">        self.positional_encoding_layer = PositionalEncoder(</div><div class="line">            d_model=dim_val,</div><div class="line">            dropout=dropout_pos_enc</div><div class="line">        )</div><div class="line"></div><div class="line">        <span class="comment"># The encoder layer used in the paper is identical to the one used by</span></div><div class="line">        <span class="comment"># Vaswani et al (2017) on which the PyTorch module is based.</span></div><div class="line">        encoder_layer = nn.TransformerEncoderLayer(</div><div class="line">            d_model=dim_val,</div><div class="line">            nhead=n_heads,</div><div class="line">            dim_feedforward=dim_feedforward_encoder,</div><div class="line">            dropout=dropout_encoder,</div><div class="line">            batch_first=batch_first</div><div class="line">        )</div><div class="line"></div><div class="line">        self.encoder = nn.TransformerEncoder(</div><div class="line">            encoder_layer=encoder_layer,</div><div class="line">            num_layers=n_encoder_layers,</div><div class="line">            norm=<span class="keyword">None</span></div><div class="line">        )</div><div class="line"></div><div class="line">        decoder_layer = nn.TransformerDecoderLayer(</div><div class="line">            d_model=dim_val,</div><div class="line">            nhead=n_heads,</div><div class="line">            dim_feedforward=dim_feedforward_decoder,</div><div class="line">            dropout=dropout_decoder,</div><div class="line">            batch_first=batch_first</div><div class="line">        )</div><div class="line"></div><div class="line">        self.decoder = nn.TransformerDecoder(</div><div class="line">            decoder_layer=decoder_layer,</div><div class="line">            num_layers=n_decoder_layers,</div><div class="line">            norm=<span class="keyword">None</span></div><div class="line">        )</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, src: Tensor, tgt: Tensor, src_mask: Tensor = None,</span></span></div><div class="line"><span class="function"><span class="params">                tgt_mask: Tensor = None)</span> -&gt; Tensor:</span></div><div class="line">        <span class="string">"""</span></div><div class="line"><span class="string">        Returns a tensor of shape:</span></div><div class="line"><span class="string">        [target_sequence_length, batch_size, num_predicted_features]</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">        Args:</span></div><div class="line"><span class="string">            src: the encoder's output sequence. Shape: (S,E) for unbatched input,</span></div><div class="line"><span class="string">                 (S, N, E) if batch_first=False or (N, S, E) if</span></div><div class="line"><span class="string">                 batch_first=True, where S is the source sequence length,</span></div><div class="line"><span class="string">                 N is the batch size, and E is the number of features (1 if univariate)</span></div><div class="line"><span class="string">            tgt: the sequence to the decoder. Shape: (T,E) for unbatched input,</span></div><div class="line"><span class="string">                 (T, N, E)(T,N,E) if batch_first=False or (N, T, E) if</span></div><div class="line"><span class="string">                 batch_first=True, where T is the target sequence length,</span></div><div class="line"><span class="string">                 N is the batch size, and E is the number of features (1 if univariate)</span></div><div class="line"><span class="string">            src_mask: the mask for the src sequence to prevent the model from</span></div><div class="line"><span class="string">                      using data points from the target sequence</span></div><div class="line"><span class="string">            tgt_mask: the mask for the tgt sequence to prevent the model from</span></div><div class="line"><span class="string">                      using data points from the target sequence</span></div><div class="line"><span class="string">        """</span></div><div class="line"></div><div class="line">        <span class="comment"># Pass throguh the input layer right before the encoder</span></div><div class="line">        src = self.encoder_input_layer(</div><div class="line">            src)  <span class="comment"># src shape: [batch_size, src length, dim_val] regardless of number of input features</span></div><div class="line"></div><div class="line">        <span class="comment"># Pass through the positional encoding layer</span></div><div class="line">        src = self.positional_encoding_layer(</div><div class="line">            src)  <span class="comment"># src shape: [batch_size, src length, dim_val] regardless of number of input features</span></div><div class="line"></div><div class="line"></div><div class="line">        src = self.encoder(  <span class="comment"># src shape: [batch_size, enc_seq_len, dim_val]</span></div><div class="line">            src=src</div><div class="line">        )</div><div class="line">        <span class="comment"># print("From model.forward(): Size of src after encoder: &#123;&#125;".format(src.size()))</span></div><div class="line"></div><div class="line">        <span class="comment"># Pass decoder input through decoder input layer</span></div><div class="line">        decoder_output = self.decoder_input_layer(</div><div class="line">            tgt)  <span class="comment"># src shape: [target sequence length, batch_size, dim_val] regardless of number of input features</span></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">        <span class="comment"># Pass throguh decoder - output shape: [batch_size, target seq len, dim_val]</span></div><div class="line">        decoder_output = self.decoder(</div><div class="line">            tgt=decoder_output,</div><div class="line">            memory=src,</div><div class="line">            tgt_mask=tgt_mask,</div><div class="line">            memory_mask=src_mask</div><div class="line">        )</div><div class="line"></div><div class="line">        <span class="comment"># Pass through linear mapping</span></div><div class="line">        decoder_output = self.linear_mapping(decoder_output)  <span class="comment"># shape [batch_size, target seq len]</span></div><div class="line"></div><div class="line">        <span class="keyword">return</span> decoder_output</div></pre></td></tr></table></figure></p>
+<p>TransformerDataset类<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">TransformerDataset</span><span class="params">(Dataset)</span>:</span></div><div class="line">    <span class="string">"""</span></div><div class="line"><span class="string">    Dataset class used for transformer models.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    """</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self,</span></span></div><div class="line"><span class="function"><span class="params">                 data: torch.tensor,</span></span></div><div class="line"><span class="function"><span class="params">                 indices: list,</span></span></div><div class="line"><span class="function"><span class="params">                 enc_seq_len: int,</span></span></div><div class="line"><span class="function"><span class="params">                 dec_seq_len: int,</span></span></div><div class="line"><span class="function"><span class="params">                 target_seq_len: int</span></span></div><div class="line"><span class="function"><span class="params">                 )</span> -&gt; <span class="keyword">None</span>:</span></div><div class="line">        <span class="string">"""</span></div><div class="line"><span class="string">        Args:</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">            data: tensor, the entire train, validation or test data sequence</span></div><div class="line"><span class="string">                        before any slicing. If univariate, data.size() will be</span></div><div class="line"><span class="string">                        [number of samples, number of variables]</span></div><div class="line"><span class="string">                        where the number of variables will be equal to 1 + the number of</span></div><div class="line"><span class="string">                        exogenous variables. Number of exogenous variables would be 0</span></div><div class="line"><span class="string">                        if univariate.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">            indices: a list of tuples. Each tuple has two elements:</span></div><div class="line"><span class="string">                     1) the start index of a sub-sequence</span></div><div class="line"><span class="string">                     2) the end index of a sub-sequence.</span></div><div class="line"><span class="string">                     The sub-sequence is split into src, trg and trg_y later.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">            enc_seq_len: int, the desired length of the input sequence given to the</span></div><div class="line"><span class="string">                     the first layer of the transformer model.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">        """</span></div><div class="line"></div><div class="line">        super().__init__()</div><div class="line"></div><div class="line">        self.indices = indices</div><div class="line"></div><div class="line">        self.data = data.astype(np.double)</div><div class="line"></div><div class="line">        self.enc_seq_len = enc_seq_len</div><div class="line"></div><div class="line">        self.dec_seq_len = dec_seq_len</div><div class="line"></div><div class="line">        self.target_seq_len = target_seq_len</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__len__</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">return</span> len(self.indices)</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getitem__</span><span class="params">(self, index)</span>:</span></div><div class="line">        <span class="string">"""</span></div><div class="line"><span class="string">        Returns a tuple with 3 elements:</span></div><div class="line"><span class="string">        1) src (the encoder input)</span></div><div class="line"><span class="string">        2) trg (the decoder input)</span></div><div class="line"><span class="string">        3) trg_y (the target)</span></div><div class="line"><span class="string">        """</span></div><div class="line">        <span class="comment"># Get the first element of the i'th tuple in the list self.indicesasdfas</span></div><div class="line">        start_idx = self.indices[index][<span class="number">0</span>]</div><div class="line"></div><div class="line">        <span class="comment"># Get the second (and last) element of the i'th tuple in the list self.indices</span></div><div class="line">        end_idx = self.indices[index][<span class="number">1</span>]</div><div class="line"></div><div class="line">        sequence = self.data[start_idx:end_idx]</div><div class="line"></div><div class="line">        <span class="comment"># print("From __getitem__: sequence length = &#123;&#125;".format(len(sequence)))</span></div><div class="line"></div><div class="line">        src, trg, trg_y = self.get_src_trg(</div><div class="line">            sequence=sequence,</div><div class="line">            enc_seq_len=self.enc_seq_len,</div><div class="line">            dec_seq_len=self.dec_seq_len,</div><div class="line">            target_seq_len=self.target_seq_len</div><div class="line">        )</div><div class="line"></div><div class="line">        <span class="keyword">return</span> src, trg, trg_y</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_src_trg</span><span class="params">(</span></span></div><div class="line"><span class="function"><span class="params">            self,</span></span></div><div class="line"><span class="function"><span class="params">            sequence: torch.Tensor,</span></span></div><div class="line"><span class="function"><span class="params">            enc_seq_len: int,</span></span></div><div class="line"><span class="function"><span class="params">            dec_seq_len: int,</span></span></div><div class="line"><span class="function"><span class="params">            target_seq_len: int</span></span></div><div class="line"><span class="function"><span class="params">    )</span> -&gt; Tuple[torch.tensor, torch.tensor, torch.tensor]:</span></div><div class="line">        <span class="string">"""</span></div><div class="line"><span class="string">        Generate the src (encoder input), trg (decoder input) and trg_y (the target)</span></div><div class="line"><span class="string">        sequences from a sequence.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">        Args:</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">            sequence: tensor, a 1D tensor of length n where</span></div><div class="line"><span class="string">                    n = encoder input length + target sequence length</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">            enc_seq_len: int, the desired length of the input to the transformer encoder</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">            target_seq_len: int, the desired length of the target sequence (the</span></div><div class="line"><span class="string">                            one against which the model output is compared)</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">        Return:</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">            src: tensor, 1D, used as input to the transformer model</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">            trg: tensor, 1D, used as input to the transformer model</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">            trg_y: tensor, 1D, the target sequence against which the model output</span></div><div class="line"><span class="string">                is compared when computing loss.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">        """</span></div><div class="line">        <span class="keyword">assert</span> len(</div><div class="line">            sequence) == enc_seq_len + target_seq_len, <span class="string">"Sequence length does not equal (input length + target length)"</span></div><div class="line"></div><div class="line">        <span class="comment"># encoder input</span></div><div class="line">        src = sequence[:enc_seq_len]</div><div class="line"></div><div class="line">        <span class="comment"># decoder input. As per the paper, it must have the same dimension as the</span></div><div class="line">        <span class="comment"># target sequence, and it must contain the last value of src, and all</span></div><div class="line">        <span class="comment"># values of trg_y except the last (i.e. it must be shifted right by 1)</span></div><div class="line">        trg = sequence[enc_seq_len - <span class="number">1</span>:len(sequence) - <span class="number">1</span>]</div><div class="line"></div><div class="line">        <span class="keyword">assert</span> len(trg) == target_seq_len, <span class="string">"Length of trg does not match target sequence length"</span></div><div class="line"></div><div class="line">        <span class="comment"># The target sequence against which the model output will be compared to compute loss</span></div><div class="line">        trg_y = sequence[-target_seq_len:]</div><div class="line"></div><div class="line">        <span class="keyword">assert</span> len(trg_y) == target_seq_len, <span class="string">"Length of trg_y does not match target sequence length"</span></div><div class="line"></div><div class="line">        <span class="keyword">return</span> src, trg, trg_y</div></pre></td></tr></table></figure></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">PositionalEncoder</span><span class="params">(nn.Module)</span>:</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(</span></span></div><div class="line"><span class="function"><span class="params">            self,</span></span></div><div class="line"><span class="function"><span class="params">            dropout: float = <span class="number">0.1</span>,</span></span></div><div class="line"><span class="function"><span class="params">            max_seq_len: int = <span class="number">5000</span>,</span></span></div><div class="line"><span class="function"><span class="params">            d_model: int = <span class="number">512</span>,</span></span></div><div class="line"><span class="function"><span class="params">            batch_first: bool = False</span></span></div><div class="line"><span class="function"><span class="params">    )</span>:</span></div><div class="line">        <span class="string">"""</span></div><div class="line"><span class="string">        Parameters:</span></div><div class="line"><span class="string">            dropout: the dropout rate</span></div><div class="line"><span class="string">            max_seq_len: the maximum length of the input sequences</span></div><div class="line"><span class="string">            d_model: The dimension of the output of sub-layers in the model</span></div><div class="line"><span class="string">                     (Vaswani et al, 2017)</span></div><div class="line"><span class="string">        """</span></div><div class="line"></div><div class="line">        super().__init__()</div><div class="line"></div><div class="line">        self.d_model = d_model</div><div class="line"></div><div class="line">        self.dropout = nn.Dropout(p=dropout)</div><div class="line"></div><div class="line">        self.batch_first = batch_first</div><div class="line"></div><div class="line">        self.x_dim = <span class="number">1</span> <span class="keyword">if</span> batch_first <span class="keyword">else</span> <span class="number">0</span></div><div class="line"></div><div class="line">        <span class="comment"># copy pasted from PyTorch tutorial</span></div><div class="line">        position = torch.arange(max_seq_len).unsqueeze(<span class="number">1</span>)</div><div class="line"></div><div class="line">        div_term = torch.exp(torch.arange(<span class="number">0</span>, d_model, <span class="number">2</span>) * (-math.log(<span class="number">10000.0</span>) / d_model))</div><div class="line"></div><div class="line">        pe = torch.zeros(max_seq_len, <span class="number">1</span>, d_model)</div><div class="line"></div><div class="line">        pe[:, <span class="number">0</span>, <span class="number">0</span>::<span class="number">2</span>] = torch.sin(position * div_term)</div><div class="line"></div><div class="line">        pe[:, <span class="number">0</span>, <span class="number">1</span>::<span class="number">2</span>] = torch.cos(position * div_term)</div><div class="line"></div><div class="line">        self.register_buffer(<span class="string">'pe'</span>, pe)</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x: Tensor)</span> -&gt; Tensor:</span></div><div class="line">        <span class="string">"""</span></div><div class="line"><span class="string">        Args:</span></div><div class="line"><span class="string">            x: Tensor, shape [batch_size, enc_seq_len, dim_val] or</span></div><div class="line"><span class="string">               [enc_seq_len, batch_size, dim_val]</span></div><div class="line"><span class="string">        """</span></div><div class="line"></div><div class="line">        x = x + self.pe[:x.size(self.x_dim)]</div><div class="line"></div><div class="line">        <span class="keyword">return</span> self.dropout(x)</div></pre></td></tr></table></figure>
+<p>训练和推理代码<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div><div class="line">228</div><div class="line">229</div><div class="line">230</div><div class="line">231</div><div class="line">232</div><div class="line">233</div><div class="line">234</div><div class="line">235</div><div class="line">236</div><div class="line">237</div><div class="line">238</div><div class="line">239</div><div class="line">240</div><div class="line">241</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">run_encoder_decoder_inference</span><span class="params">(</span></span></div><div class="line"><span class="function"><span class="params">        model: nn.Module,</span></span></div><div class="line"><span class="function"><span class="params">        src: torch.Tensor,</span></span></div><div class="line"><span class="function"><span class="params">        forecast_window: int,</span></span></div><div class="line"><span class="function"><span class="params">        batch_size: int,</span></span></div><div class="line"><span class="function"><span class="params">        batch_first: bool = False</span></span></div><div class="line"><span class="function"><span class="params">)</span> -&gt; torch.Tensor:</span></div><div class="line">    <span class="string">"""</span></div><div class="line"><span class="string">    NB! This function is currently only tested on models that work with</span></div><div class="line"><span class="string">    batch_first = False</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    This function is for encoder-decoder type models in which the decoder requires</span></div><div class="line"><span class="string">    an input, tgt, which - during training - is the target sequence. During inference,</span></div><div class="line"><span class="string">    the values of tgt are unknown, and the values therefore have to be generated</span></div><div class="line"><span class="string">    iteratively.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    This function returns a prediction of length forecast_window for each batch in src</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    NB! If you want the inference to be done without gradient calculation,</span></div><div class="line"><span class="string">    make sure to call this function inside the context manager torch.no_grad like:</span></div><div class="line"><span class="string">    with torch.no_grad:</span></div><div class="line"><span class="string">        run_encoder_decoder_inference()</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    The context manager is intentionally not called inside this function to make</span></div><div class="line"><span class="string">    it usable in cases where the function is used to compute loss that must be</span></div><div class="line"><span class="string">    backpropagated during training and gradient calculation hence is required.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    If use_predicted_tgt = True:</span></div><div class="line"><span class="string">    To begin with, tgt is equal to the last value of src. Then, the last element</span></div><div class="line"><span class="string">    in the model's prediction is iteratively concatenated with tgt, such that</span></div><div class="line"><span class="string">    at each step in the for-loop, tgt's size increases by 1. Finally, tgt will</span></div><div class="line"><span class="string">    have the correct length (target sequence length) and the final prediction</span></div><div class="line"><span class="string">    will be produced and returned.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    Args:</span></div><div class="line"><span class="string">        model: An encoder-decoder type model where the decoder requires</span></div><div class="line"><span class="string">               target values as input. Should be set to evaluation mode before</span></div><div class="line"><span class="string">               passed to this function.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">        src: The input to the model</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">        forecast_horizon: The desired length of the model's output, e.g. 58 if you</span></div><div class="line"><span class="string">                         want to predict the next 58 hours of FCR prices.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">        batch_size: batch size</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">        batch_first: If true, the shape of the model input should be</span></div><div class="line"><span class="string">                     [batch size, input sequence length, number of features].</span></div><div class="line"><span class="string">                     If false, [input sequence length, batch size, number of features]</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    """</span></div><div class="line"></div><div class="line">    <span class="comment"># Dimension of a batched model input that contains the target sequence values</span></div><div class="line">    target_seq_dim = <span class="number">0</span> <span class="keyword">if</span> batch_first == <span class="keyword">False</span> <span class="keyword">else</span> <span class="number">1</span></div><div class="line"></div><div class="line">    <span class="comment"># Take the last value of thetarget variable in all batches in src and make it tgt</span></div><div class="line">    <span class="comment"># as per the Influenza paper</span></div><div class="line">    tgt = src[<span class="number">-1</span>, :, <span class="number">0</span>] <span class="keyword">if</span> batch_first == <span class="keyword">False</span> <span class="keyword">else</span> src[:, <span class="number">-1</span>, <span class="number">0</span>]  <span class="comment"># shape [1, batch_size, 1]</span></div><div class="line"></div><div class="line">    <span class="comment"># Change shape from [batch_size] to [1, batch_size, 1]</span></div><div class="line">    <span class="keyword">if</span> batch_size == <span class="number">1</span>:</div><div class="line">        tgt = tgt.unsqueeze(<span class="number">0</span>).unsqueeze(<span class="number">0</span>)  <span class="comment"># change from [1] to [1, 1, 1]</span></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment"># Iteratively concatenate tgt with the first element in the prediction</span></div><div class="line">    <span class="keyword">for</span> _ <span class="keyword">in</span> range(forecast_window - <span class="number">1</span>):</div><div class="line"></div><div class="line">        <span class="comment"># Create masks</span></div><div class="line">        dim_a = tgt.shape[<span class="number">1</span>] <span class="keyword">if</span> batch_first == <span class="keyword">True</span> <span class="keyword">else</span> tgt.shape[<span class="number">0</span>]</div><div class="line"></div><div class="line">        dim_b = src.shape[<span class="number">1</span>] <span class="keyword">if</span> batch_first == <span class="keyword">True</span> <span class="keyword">else</span> src.shape[<span class="number">0</span>]</div><div class="line"></div><div class="line">        tgt_mask = generate_square_subsequent_mask(</div><div class="line">            dim1=dim_a,</div><div class="line">            dim2=dim_a,</div><div class="line">        )</div><div class="line"></div><div class="line">        src_mask = generate_square_subsequent_mask(</div><div class="line">            dim1=dim_a,</div><div class="line">            dim2=dim_b,</div><div class="line">        )</div><div class="line">        </div><div class="line">        tgt_mask = tgt_mask.to(<span class="string">"cuda:0"</span>)</div><div class="line">        src_mask = src_mask.to(<span class="string">"cuda:0"</span>)</div><div class="line">        <span class="comment">#print(src.device, tgt.device, src_mask.device, tgt_mask.device)</span></div><div class="line">        <span class="comment"># Make prediction</span></div><div class="line">        </div><div class="line">        prediction = model(src, tgt, src_mask, tgt_mask)</div><div class="line"></div><div class="line">        <span class="comment"># If statement simply makes sure that the predicted value is</span></div><div class="line">        <span class="comment"># extracted and reshaped correctly</span></div><div class="line">        <span class="keyword">if</span> batch_first == <span class="keyword">False</span>:</div><div class="line"></div><div class="line">            <span class="comment"># Obtain the predicted value at t+1 where t is the last time step</span></div><div class="line">            <span class="comment"># represented in tgt</span></div><div class="line">            last_predicted_value = prediction[<span class="number">-1</span>, :, :]</div><div class="line"></div><div class="line">            <span class="comment"># Reshape from [batch_size, 1] --&gt; [1, batch_size, 1]</span></div><div class="line">            last_predicted_value = last_predicted_value.unsqueeze(<span class="number">0</span>)</div><div class="line"></div><div class="line">        <span class="keyword">else</span>:</div><div class="line"></div><div class="line">            <span class="comment"># Obtain predicted value</span></div><div class="line">            last_predicted_value = prediction[:, <span class="number">-1</span>, :]</div><div class="line"></div><div class="line">            <span class="comment"># Reshape from [batch_size, 1] --&gt; [batch_size, 1, 1]</span></div><div class="line">            last_predicted_value = last_predicted_value.unsqueeze(<span class="number">-1</span>)</div><div class="line"></div><div class="line">        <span class="comment"># Detach the predicted element from the graph and concatenate with</span></div><div class="line">        <span class="comment"># tgt in dimension 1 or 0</span></div><div class="line">        tgt = torch.cat((tgt, last_predicted_value.detach()), target_seq_dim)</div><div class="line"></div><div class="line">    <span class="comment"># Create masks</span></div><div class="line">    dim_a = tgt.shape[<span class="number">1</span>] <span class="keyword">if</span> batch_first == <span class="keyword">True</span> <span class="keyword">else</span> tgt.shape[<span class="number">0</span>]</div><div class="line"></div><div class="line">    dim_b = src.shape[<span class="number">1</span>] <span class="keyword">if</span> batch_first == <span class="keyword">True</span> <span class="keyword">else</span> src.shape[<span class="number">0</span>]</div><div class="line"></div><div class="line">    tgt_mask = generate_square_subsequent_mask(</div><div class="line">        dim1=dim_a,</div><div class="line">        dim2=dim_a,</div><div class="line">    )</div><div class="line"></div><div class="line">    src_mask = generate_square_subsequent_mask(</div><div class="line">        dim1=dim_a,</div><div class="line">        dim2=dim_b,</div><div class="line">    )</div><div class="line">    tgt_mask = tgt_mask.to(<span class="string">"cuda:0"</span>)</div><div class="line">    src_mask = src_mask.to(<span class="string">"cuda:0"</span>)</div><div class="line">    <span class="comment"># Make final prediction</span></div><div class="line">    final_prediction = model(src, tgt, src_mask, tgt_mask)</div><div class="line"></div><div class="line">    <span class="keyword">return</span> final_prediction</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="comment"># 构造时间序列数据</span></div><div class="line"></div><div class="line">forecast_window = <span class="number">60</span></div><div class="line">enc_seq_len = <span class="number">120</span></div><div class="line">epochs = <span class="number">70</span></div><div class="line">train_indices = [(i, i+enc_seq_len+forecast_window) <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, <span class="number">9000</span>, <span class="number">1</span>)]<span class="comment"># 生成1000条样本 9170</span></div><div class="line">train_dataset = TransformerDataset(data, indices=train_indices, enc_seq_len=enc_seq_len, dec_seq_len=forecast_window, target_seq_len=forecast_window)</div><div class="line">train_dataloader = DataLoader(train_dataset, batch_size=<span class="number">32</span>, shuffle=<span class="keyword">True</span>)</div><div class="line"></div><div class="line">val_indices = [(i, i+enc_seq_len+forecast_window) <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">9180</span>, <span class="number">9181</span>, <span class="number">5</span>)]<span class="comment"># 生成1000条样本</span></div><div class="line">val_dataset = TransformerDataset(data, indices=val_indices, enc_seq_len=enc_seq_len, dec_seq_len=forecast_window, target_seq_len=forecast_window)</div><div class="line">val_dataloader = DataLoader(val_dataset, batch_size=<span class="number">1</span>, shuffle=<span class="keyword">False</span>)</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">## Model parameters</span></div><div class="line">dim_val = <span class="number">56</span> <span class="comment"># This can be any value divisible by n_heads. 512 is used in the original transformer paper.</span></div><div class="line">n_heads = <span class="number">2</span> <span class="comment"># The number of attention heads (aka parallel attention layers). dim_val must be divisible by this number</span></div><div class="line">n_decoder_layers = <span class="number">2</span> <span class="comment"># Number of times the decoder layer is stacked in the decoder</span></div><div class="line">n_encoder_layers = <span class="number">2</span> <span class="comment"># Number of times the encoder layer is stacked in the encoder</span></div><div class="line">input_size = <span class="number">1</span> <span class="comment"># The number of input variables. 1 if univariate forecasting.</span></div><div class="line"></div><div class="line">model = TimeSeriesTransformer(</div><div class="line">    input_size=input_size,</div><div class="line">    dim_val=dim_val,</div><div class="line">    batch_first=<span class="keyword">True</span>,</div><div class="line">    dec_seq_len=forecast_window,</div><div class="line">    out_seq_len=forecast_window,</div><div class="line">    n_decoder_layers=n_decoder_layers,</div><div class="line">    n_encoder_layers=n_encoder_layers,</div><div class="line">    n_heads=n_heads)</div><div class="line"></div><div class="line">model.to(device=<span class="string">"cuda:0"</span>)</div><div class="line"></div><div class="line">optimizer = torch.optim.Adam(model.parameters(), lr=<span class="number">0.0001</span>)</div><div class="line"></div><div class="line">criterion = torch.nn.MSELoss()</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment"># Iterate over all epochs</span></div><div class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> range(epochs):</div><div class="line">    train_loss = <span class="number">0.0</span></div><div class="line">    <span class="comment"># Iterate over all (x,y) pairs in training dataloader</span></div><div class="line">    <span class="keyword">if</span> epoch&gt;<span class="number">0</span>:</div><div class="line">        <span class="keyword">for</span> i, (src, tgt, tgt_y) <span class="keyword">in</span> enumerate(train_dataloader):</div><div class="line">            src = src.unsqueeze(<span class="number">-1</span>)</div><div class="line">            src = src.to(torch.float32)</div><div class="line">            src = src.to(<span class="string">"cuda:0"</span>)</div><div class="line">            tgt = tgt.unsqueeze(<span class="number">-1</span>)</div><div class="line">            tgt = tgt.to(torch.float32)</div><div class="line">            tgt = tgt.to(<span class="string">"cuda:0"</span>)</div><div class="line">            tgt_y = tgt_y.to(torch.float32)</div><div class="line">            tgt_y = tgt_y.to(<span class="string">"cuda:0"</span>)</div><div class="line">            <span class="comment"># zero the parameter gradients</span></div><div class="line">            optimizer.zero_grad()</div><div class="line"></div><div class="line">            <span class="comment"># Generate masks</span></div><div class="line">            tgt_mask = generate_square_subsequent_mask(</div><div class="line">                dim1=forecast_window,</div><div class="line">                dim2=forecast_window</div><div class="line">                )</div><div class="line">            </div><div class="line">            src_mask = generate_square_subsequent_mask(</div><div class="line">                dim1=forecast_window,</div><div class="line">                dim2=enc_seq_len</div><div class="line">                )</div><div class="line">            tgt_mask = tgt_mask.to(<span class="string">"cuda:0"</span>)</div><div class="line">            src_mask = src_mask.to(<span class="string">"cuda:0"</span>)</div><div class="line">            </div><div class="line">            <span class="comment"># Make forecasts</span></div><div class="line">            prediction = model(src, tgt, src_mask, tgt_mask)</div><div class="line">            prediction = prediction.squeeze(<span class="number">-1</span>)</div><div class="line">            <span class="comment"># Compute and backprop loss</span></div><div class="line">            loss = criterion(tgt_y, prediction)</div><div class="line"></div><div class="line">            loss.backward()</div><div class="line"></div><div class="line">            <span class="comment"># Take optimizer step</span></div><div class="line">            optimizer.step()</div><div class="line">            train_loss += loss.item() * src.size(<span class="number">0</span>)</div><div class="line">        print(<span class="string">"Epoch: &#123;&#125; Loss: &#123;&#125;"</span>.format(epoch, train_loss / len(train_dataloader.dataset)))</div><div class="line"></div><div class="line">    <span class="comment"># Iterate over all (x,y) pairs in validation dataloader</span></div><div class="line">    model.eval()</div><div class="line"></div><div class="line">    <span class="keyword">with</span> torch.no_grad():</div><div class="line">        <span class="keyword">for</span> i, (src, _, tgt_y) <span class="keyword">in</span> enumerate(val_dataloader):</div><div class="line">            src = src.unsqueeze(<span class="number">-1</span>)</div><div class="line">            src = src.to(torch.float32)</div><div class="line">            src = src.to(<span class="string">"cuda:0"</span>)</div><div class="line">            tgt_y = tgt_y.to(torch.float32)</div><div class="line">            tgt_y = tgt_y.to(<span class="string">"cuda:0"</span>)</div><div class="line">            <span class="comment">#print(model,src)</span></div><div class="line">            prediction = run_encoder_decoder_inference(</div><div class="line">                model=model,</div><div class="line">                src=src,</div><div class="line">                forecast_window=forecast_window,</div><div class="line">                batch_size=src.shape[<span class="number">0</span>],</div><div class="line">                batch_first=<span class="keyword">True</span>,</div><div class="line">            )</div><div class="line"></div><div class="line">            loss = criterion(tgt_y, prediction)</div><div class="line">            <span class="comment">#print(f"tgt_y:&#123;tgt_y&#125;,prediction:&#123;prediction&#125;")</span></div><div class="line">            print(<span class="string">f"val loss:<span class="subst">&#123;loss&#125;</span>"</span>)</div><div class="line">            <span class="keyword">break</span></div></pre></td></tr></table></figure></p>
+<p>xgboost训练代码:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 构造时间序列数据</span></div><div class="line">data = generate_data(<span class="number">10000</span>)</div><div class="line">forecast_window = <span class="number">60</span></div><div class="line">enc_seq_len = <span class="number">120</span></div><div class="line">train_indices = [(i, i+enc_seq_len+forecast_window) <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, <span class="number">9000</span>, <span class="number">1</span>)]<span class="comment"># 生成1000条样本 9170</span></div><div class="line">val_indices = [(i, i+enc_seq_len+forecast_window) <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">9180</span>, <span class="number">9181</span>, <span class="number">5</span>)]<span class="comment"># 生成1000条样本</span></div><div class="line">train_x_list = []</div><div class="line">train_y_list = []</div><div class="line"><span class="keyword">for</span> (s,e) <span class="keyword">in</span> train_indices:</div><div class="line">    train_x_list.append(data[s:s+enc_seq_len])</div><div class="line">    train_y_list.append(data[e-forecast_window:e])</div><div class="line">test_x_list = []</div><div class="line">test_y_list = []</div><div class="line"><span class="keyword">for</span> (s,e) <span class="keyword">in</span> val_indices:</div><div class="line">    test_x_list.append(data[s:s+enc_seq_len])</div><div class="line">    test_y_list.append(data[e-forecast_window:e])</div><div class="line">train_x = np.stack(train_x_list)</div><div class="line">train_y = np.stack(train_y_list)</div><div class="line">test_x = np.stack(test_x_list)</div><div class="line">test_y = np.stack(test_y_list)    </div><div class="line"></div><div class="line"><span class="keyword">import</span> xgboost <span class="keyword">as</span> xgb</div><div class="line">params = &#123;</div><div class="line">            <span class="comment">#'booster': 'gbtree',</span></div><div class="line">            <span class="string">'objective'</span>: <span class="string">'reg:squarederror'</span>,</div><div class="line">            <span class="string">'tree_method'</span>: <span class="string">'hist'</span>,</div><div class="line">            <span class="string">'eval_metric'</span>:<span class="string">'mae'</span>,</div><div class="line">            <span class="comment">#'gamma': 0.02,</span></div><div class="line">            <span class="string">'max_depth'</span>: <span class="number">4</span>,</div><div class="line">            <span class="comment">#'subsample': 0.8,</span></div><div class="line">            <span class="comment">#'colsample_bytree': 0.8,</span></div><div class="line">            <span class="comment">#'scale_pos_weights': 1,</span></div><div class="line">            <span class="comment">#'min_child_weight': 4,</span></div><div class="line">            <span class="string">'silent'</span>: <span class="number">0</span>,</div><div class="line">            <span class="string">'eta'</span>: <span class="number">0.015</span>,</div><div class="line">        &#125;</div><div class="line">dtrain = xgb.DMatrix(train_x, label=train_y[:,<span class="number">0</span>])</div><div class="line">dval = xgb.DMatrix(test_x, label=test_y[:,<span class="number">0</span>])</div><div class="line">evallist = [(dtrain,<span class="string">'train'</span>),(dval, <span class="string">'eval'</span>)]</div><div class="line">xgb_model = xgb.train(params, dtrain, num_boost_round=<span class="number">500</span>,</div><div class="line">                      early_stopping_rounds=<span class="number">60</span>, evals=evallist)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">inference</span><span class="params">(model,test_x,test_y)</span>:</span></div><div class="line">    pred_y = []</div><div class="line">    fea = test_x[<span class="number">0</span>][:].reshape(<span class="number">1</span>,<span class="number">-1</span>)</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(test_y[<span class="number">0</span>])):</div><div class="line">        _y = model.predict(xgb.DMatrix(fea[:,<span class="number">-120</span>:]))[<span class="number">0</span>]</div><div class="line">        pred_y.append(_y)</div><div class="line">        fea = np.append(fea,np.array([[_y]]),axis=<span class="number">1</span>)</div><div class="line">        <span class="comment">#print(_y,fea[:,-120:])</span></div><div class="line">        </div><div class="line">    <span class="keyword">return</span> pred_y</div><div class="line"></div><div class="line">pred_y = inference(xgb_model,test_x,test_y)</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">plot_curves</span><span class="params">(x, y1, y2, y3)</span>:</span></div><div class="line">    plt.plot(x, np.concatenate([y1,y2]), label=<span class="string">'predict'</span>,color=<span class="string">'red'</span>)</div><div class="line">    plt.plot(x, np.concatenate([y1,y3]), label=<span class="string">'gt'</span>,color=<span class="string">'yellow'</span>)</div><div class="line"></div><div class="line">    plt.xlabel(<span class="string">'X'</span>)</div><div class="line">    plt.ylabel(<span class="string">'Y'</span>)</div><div class="line">    plt.title(<span class="string">'xgboost mae:0.124'</span>)</div><div class="line"></div><div class="line">    plt.legend()</div><div class="line">    plt.show()</div><div class="line">    </div><div class="line">plot_curves(np.array([i <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">180</span>)]),test_x[<span class="number">0</span>],pred_y,test_y[<span class="number">0</span>])</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/07/01/reinforcement_learning/rl_overview/" rel="next" title="强化学习算法总结">
+                <i class="fa fa-chevron-left"></i> 强化学习算法总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="vcomments"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <p class="site-author-name" itemprop="name">camey</p>
+            <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives/">
+            
+                <span class="site-state-item-count">30</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#数据准备"><span class="nav-number">1.</span> <span class="nav-text">数据准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#transformer时间序列模型"><span class="nav-number">2.</span> <span class="nav-text">transformer时间序列模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#xgboost时间序列模型"><span class="nav-number">3.</span> <span class="nav-text">xgboost时间序列模型</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">camey</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" href="https://hexo.io">Hexo</a></div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.2</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("etbSNf9p1CXgimPme6NHVR9k-gzGzoHsz", "uqiSYDjY3a71w4jm8BR42mRo");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>
